@@ -59,7 +59,6 @@ async function loadPreview() {
     run = await getGovernedPathwayRun(runId);
     renderGovernance(run);
   } else {
-    // Old pathways remain viewable; only Agent OS drafts get the governed decision bar.
     setDecisionEnabled(false);
   }
 }
@@ -82,8 +81,7 @@ function renderGovernance(currentRun) {
   setText(
     "#sourceSummaryText",
     resources.length
-      ? `${resources.length} approved source${resources.length === 1 ? "" : "s"} were selected by the Resource Agent."
-          `.replace('"\n          ', '')
+      ? `${resources.length} approved source${resources.length === 1 ? "" : "s"} selected by the Resource Agent.`
       : "No mapped external source was available; check the QA notes before approving."
   );
 
@@ -112,7 +110,7 @@ function wireButton(selector, decision) {
       await makeDecision(selector, decision);
     });
   } catch (error) {
-    // The deploy README lists these four optional editor controls. Old previews still render without them.
+    // Optional on older preview layouts.
   }
 }
 
@@ -136,7 +134,6 @@ async function makeDecision(selector, decision) {
     };
 
     if (decision === "approve-with-edits") {
-      // Page-specific editing controls can populate this hidden/optional JSON field.
       const editJson = safeValue("#approvedPathwayJsonInput").trim();
       if (editJson) payload.pathway = JSON.parse(editJson);
     }
@@ -145,15 +142,13 @@ async function makeDecision(selector, decision) {
     setText("#approvalStatusText", decisionResultText(result));
     setText("#previewStatusText", result?.status || decision);
 
-    if (result?.status === "published") {
+    if (["published", "changes-requested", "rejected"].includes(result?.status)) {
       setDecisionEnabled(false);
-      if (button) button.label = "Published ✓";
-    } else if (result?.status === "changes-requested") {
-      setDecisionEnabled(false);
-      if (button) button.label = "Changes requested ✓";
-    } else if (result?.status === "rejected") {
-      setDecisionEnabled(false);
-      if (button) button.label = "Rejected";
+    }
+    if (button) {
+      if (result?.status === "published") button.label = "Published ✓";
+      else if (result?.status === "changes-requested") button.label = "Changes requested ✓";
+      else if (result?.status === "rejected") button.label = "Rejected";
     }
 
     run = await getGovernedPathwayRun(runId);
@@ -204,7 +199,7 @@ async function prepareResources(blocks) {
           if (itemData.sourceUrl) wixLocationFrontend.to(itemData.sourceUrl);
         });
       } catch (error) {
-        // optional button id
+        // Optional legacy/current id.
       }
     }
   });
@@ -216,7 +211,7 @@ function setDecisionEnabled(enabled) {
     try {
       if (enabled) $w(selector).enable(); else $w(selector).disable();
     } catch (error) {
-      // optional control
+      // Optional control on older preview layouts.
     }
   }
 }
