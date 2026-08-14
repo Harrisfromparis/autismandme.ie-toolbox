@@ -1,0 +1,33 @@
+{
+  "site": {
+    "name": "Autism And Me",
+    "id": "d48b8926-fe97-4c1b-ac48-4fb1f362837f",
+    "url": "https://www.autismandme.ie/"
+  },
+  "collection": {
+    "id": "iLearnAdaptiveLaunch",
+    "displayName": "iLEARN Adaptive Launch",
+    "permissions": {
+      "read": "ANYONE",
+      "insert": "ADMIN",
+      "update": "ADMIN",
+      "remove": "ADMIN"
+    }
+  },
+  "items": [
+    {
+      "profile": "Supported Start",
+      "id": "edffc904-82b2-4023-ba4a-3c411aaa74a7"
+    },
+    {
+      "profile": "Building Confidence",
+      "id": "e9c36756-8e57-4ea8-9d49-ab4bdb272a72"
+    },
+    {
+      "profile": "Ready for Challenge",
+      "id": "9f714a82-d337-4b59-b539-84ac9714080c"
+    }
+  ],
+  "privateDataStored": false,
+  "status": "staged-and-verified"
+}
