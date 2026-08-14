@@ -2,9 +2,8 @@ import os
 
 os.environ["ILEARN_SERVICE_API_KEY"] = "test-key"
 
-from fastapi.testclient import TestClient
-
 from app import COURSE_ID, PROGRAM, SOURCE_ID, app
+from fastapi.testclient import TestClient
 
 BASE = {
     "learnerId": "wix-member-123",
