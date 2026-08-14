@@ -7,6 +7,9 @@
 - zleap-sag engine: `0.7.1`
 - OpenTutor commit: `47c23db3785ff8cb5e84a50968f16373074dc819`
 - Wix site: Autism And Me (`d48b8926-fe97-4c1b-ac48-4fb1f362837f`)
+- Integration repository: `Harrisfromparis/autismandme.ie-toolbox`
+- Launch branch: `codex/ilearn-sag-opentutor-macbeth-20260814`
+- Teacher-review pull request: https://github.com/Harrisfromparis/autismandme.ie-toolbox/pull/22
 
 ## Passed
 
@@ -27,6 +30,8 @@
 - Three tested learner-profile records were inserted and queried successfully.
 - No learner ID, answer, progress or private data was written to the public CMS
   collection.
+- Fourteen launch files were committed to the connected repository and pull
+  request 22 was opened against `main` for the required teacher approval gate.
 
 ## Live Wix records
 
