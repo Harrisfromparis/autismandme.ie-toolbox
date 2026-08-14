@@ -1,5 +1,12 @@
 # Launch checklist
 
+## Teacher approval
+
+1. Review pull request https://github.com/Harrisfromparis/autismandme.ie-toolbox/pull/22.
+2. Confirm the Leaving Certificate 2027 Macbeth scope and source excerpt.
+3. Complete the repository's Quality Agent and teacher approval gates.
+4. Merge only after the service and Wix acceptance checks below pass.
+
 ## Service deployment
 
 1. Deploy this directory with `render.yaml` or the included `Dockerfile`.
