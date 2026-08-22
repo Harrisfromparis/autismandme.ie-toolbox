@@ -1,1 +1,232 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>iLEARN current setup</title><style>html,body{margin:0;background:#07111f;color:#fff;font-family:Arial,sans-serif}*{box-sizing:border-box}button,textarea{font:inherit}.hero{min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 70% 20%,#243a5c 0,#0a1220 35%,#050910 80%);padding:24px}.heroCard{width:min(1180px,96vw);display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:center}.hero h1{font:700 clamp(48px,7vw,92px)/.95 Georgia,serif;margin:0 0 18px}.hero p{font-size:20px;line-height:1.55;color:#cbd6e5}.hero button{border:0;border-radius:999px;padding:17px 28px;background:#e3bd73;color:#201607;font-weight:900;font-size:19px;cursor:pointer}.cat{height:520px;border-radius:34px;background:radial-gradient(circle at 50% 35%,#e3bd73 0 10%,transparent 11%),linear-gradient(145deg,#202b3e,#101722);position:relative;overflow:hidden;border:1px solid #ffffff22}.cat:before{content:'3D CAT HERO';position:absolute;inset:auto 22px 22px 22px;padding:15px;border-radius:18px;background:#070b12cc;color:#e3bd73;font-weight:900;letter-spacing:.12em}.app{display:none;min-height:100vh;padding:18px;background:#080d14}.app.on{display:block}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:1300px;margin:auto}.brand{font-weight:900;font-size:20px}.layout{max-width:1300px;margin:18px auto;display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.street{min-height:720px;position:relative;border-radius:28px;overflow:hidden;background:linear-gradient(90deg,#1b2230 0 25%,#31343a 25% 31%,#191817 31% 69%,#31343a 69% 75%,#1b2230 75% 100%);border:1px solid #ffffff22}.street:after{content:'';position:absolute;left:50%;top:0;bottom:0;border-left:3px dashed #e3bd7366}.building{position:absolute;top:0;bottom:0;width:25%;background:repeating-linear-gradient(180deg,#18202d 0 65px,#283443 65px 70px)}.building.left{left:0}.building.right{right:0}.lamp{position:absolute;width:8px;height:90px;background:#555;left:27%;top:35%}.lamp:after{content:'';position:absolute;width:24px;height:24px;border-radius:50%;background:#ffc86e;left:-8px;top:-10px;box-shadow:0 0 28px #ffc86e}.stop{position:absolute;width:58px;height:58px;border-radius:50%;border:3px solid white;background:#b8323f;color:#fff;font-weight:900;font-size:20px;display:grid;place-items:center;cursor:pointer;transform:translate(-50%,-50%);z-index:3;box-shadow:0 8px 24px #0008}.stop.done{background:#1c7b52}.s1{left:42%;top:18%}.s2{left:58%;top:38%}.s3{left:42%;top:69%}.s4{left:58%;top:78%}.lab{margin-top:18px;border-radius:24px;padding:18px;background:#101824;border:1px solid #ffffff22}.lab h2{margin-top:0}.labStops{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.labStop{border:1px solid #ffffff22;border-radius:16px;padding:18px;background:#172231;color:#fff;font-weight:900;cursor:pointer}.panel{border-radius:28px;background:#0d1624;border:1px solid #ffffff22;padding:22px;position:sticky;top:18px;height:max-content}.panel h2{font:700 36px Georgia,serif;margin:6px 0 10px}.panel p{color:#d3dceb;line-height:1.55}.simple{color:#ffd991;font-weight:800}.panel label{display:block;color:#e3bd73;font-weight:900;margin:14px 0 6px}.panel textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid #ffffff33;background:#060a10;color:#fff;padding:12px}.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}.actions button,.top button{border:0;border-radius:12px;padding:10px 13px;background:#ffffff12;color:white;font-weight:900;cursor:pointer}.actions .primary{background:#85e6ac;color:#082016}.progress{margin-top:18px;padding:14px;border-radius:16px;background:#07101a;border:1px solid #ffffff1e}.bar{height:9px;background:#ffffff15;border-radius:99px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;width:0;background:#85e6ac}.status{color:#bfc8d3;font-size:14px}.empty{color:#9aa7b7}.badge{display:inline-block;padding:6px 9px;border-radius:999px;background:#b8323f;font-size:12px;font-weight:900}@media(max-width:850px){.heroCard,.layout{grid-template-columns:1fr}.cat{height:360px}.panel{position:static}.street{min-height:600px}}</style></head><body><section class="hero" id="hero"><div class="heroCard"><div><div class="badge">CURRENT WORKING SETUP</div><h1>iLEARN</h1><p>Enter a learning experience before class. This preview focuses on the Victorian Street pathway with a map that is always clickable.</p><button id="enter">Explore Victorian Street</button></div><div class="cat"></div></div></section><main class="app" id="app"><div class="top"><div class="brand">iLEARN · The Divided House</div><button id="home">Back to hero</button></div><div class="layout"><div><section class="street"><div class="building left"></div><div class="building right"></div><div class="lamp"></div><button class="stop s1" data-stop="1">1</button><button class="stop s2" data-stop="2">2</button><button class="stop s3" data-stop="3">3</button><button class="stop s4" data-stop="4">4</button></section><section class="lab"><h2>Hidden laboratory</h2><div class="labStops"><button class="labStop" data-stop="5">5 · Experiment</button><button class="labStop" data-stop="6">6 · Mirror</button><button class="labStop" data-stop="7">7 · Final claim</button></div></section></div><aside class="panel"><div class="badge" id="badge">LEARNING PATH</div><h2 id="title">Choose a numbered stop</h2><p id="text" class="empty">The Victorian Street map is active. Click any numbered marker. You do not need to walk into a tiny hotspot.</p><p id="simple" class="simple"></p><label id="qlabel" for="answer" style="display:none"></label><textarea id="answer" style="display:none" placeholder="Your thinking…"></textarea><div class="actions"><button id="complete" class="primary" style="display:none">Save & complete</button><button id="next">Open next stop</button></div><div class="progress"><strong id="progressText">0 of 7 complete</strong><div class="bar"><i id="bar"></i></div><p class="status" id="status">All seven map areas are clickable.</p></div></aside></div></main><script>const stops={1:{title:'Observe the windows',text:'Look at the warm, respectable windows. Stevenson presents a world where public appearance and reputation matter.',simple:'What makes this place look respectable?',q:'Which detail suggests respectability or public reputation?'},2:{title:'Read the atmosphere',text:'Notice the gaslight, wet street, darkness and fog. The street looks ordered, but the atmosphere still feels uneasy.',simple:'What makes this street feel uneasy?',q:'Choose one detail that creates unease. What effect does it have?'},3:{title:"Read Jekyll's public identity",text:'The respectable entrance represents the identity Jekyll shows society. Reputation is central to the novel.',simple:'What does Jekyll want other people to believe about him?',q:"How does the public entrance connect to Jekyll's reputation?"},4:{title:'Examine the hidden door',text:'Compare the hidden entrance with the respectable front. Two entrances suggest two sides of the same life.',simple:'What is different about the public side and the hidden side?',q:'What can the hidden door represent about secrecy or repression?'},5:{title:'Inspect the laboratory',text:"Jekyll's experiment gives him power, but it also gives him responsibility for what follows.",simple:"When does Jekyll's experiment become dangerous?",q:'What responsibility does Jekyll have for what his experiment causes?'},6:{title:'Face the mirror',text:'The mirror represents divided identity. Jekyll tries to separate parts of himself that still belong to one person.',simple:'What does the mirror show about Jekyll and Hyde?',q:'Explain one way the mirror can represent the divided self.'},7:{title:'Make your final claim',text:'Bring the world and the text together. Choose one theme and explain it in your own words.',simple:'Choose one theme. Explain what you understand now.',q:'Explain one theme using one detail from the world and one detail from the text.'}};let current=0;let completed=new Set(JSON.parse(localStorage.getItem('ilearn-current-completed')||'[]'));let answers=JSON.parse(localStorage.getItem('ilearn-current-answers')||'{}');const $=id=>document.getElementById(id);function renderProgress(){document.querySelectorAll('[data-stop]').forEach(b=>b.classList.toggle('done',completed.has(+b.dataset.stop)));$('progressText').textContent=completed.size+' of 7 complete';$('bar').style.width=(completed.size/7*100)+'%'}function openStop(n){current=n;const s=stops[n];$('badge').textContent='STOP '+n+' / 7';$('title').textContent=s.title;$('text').textContent=s.text;$('text').className='';$('simple').textContent=s.simple;$('qlabel').textContent=s.q;$('qlabel').style.display='block';$('answer').style.display='block';$('answer').value=answers[n]||'';$('complete').style.display='inline-block';$('status').textContent='Stop '+n+' opened from the map.'}document.querySelectorAll('[data-stop]').forEach(b=>b.onclick=()=>openStop(+b.dataset.stop));$('enter').onclick=()=>{$('hero').style.display='none';$('app').classList.add('on')};$('home').onclick=()=>{$('app').classList.remove('on');$('hero').style.display='grid'};$('complete').onclick=()=>{if(!current)return;answers[current]=$('answer').value.trim();completed.add(current);localStorage.setItem('ilearn-current-completed',JSON.stringify([...completed]));localStorage.setItem('ilearn-current-answers',JSON.stringify(answers));renderProgress();$('status').textContent='STOP '+current+' saved ✓'};$('next').onclick=()=>{let n=1;for(;n<=7;n++)if(!completed.has(n))break;if(n>7)n=7;openStop(n)};renderProgress();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f5f1e7" />
+  <title>iLEARN · Learning that adapts</title>
+  <style>
+    :root{
+      --ink:#153247;--navy:#0e2a3c;--muted:#617485;--paper:#f5f1e7;--white:#fffdf8;
+      --line:#d8dfdd;--sea:#246b75;--mint:#d8eee7;--sky:#dcecf4;--gold:#e7b65f;--peach:#f2dfd2;
+      --shadow:0 22px 60px rgba(27,49,62,.10);--r:30px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+    button,a,input{font:inherit}a{color:inherit}.wrap{max-width:1280px;margin:auto;padding:0 24px}
+    .top{position:sticky;top:0;z-index:20;background:rgba(245,241,231,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(216,223,221,.75)}
+    .topin{height:76px;display:flex;align-items:center;justify-content:space-between;gap:22px}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:950;letter-spacing:.02em}
+    .mark{height:43px;width:43px;border-radius:14px;background:var(--navy);color:white;display:grid;place-items:center;font-size:14px;box-shadow:0 8px 18px rgba(14,42,60,.18)}
+    nav{display:flex;align-items:center;gap:5px}.navlink{padding:9px 11px;text-decoration:none;border-radius:10px;font-size:14px;font-weight:800;color:#405a6b}.navlink:hover{background:rgba(255,255,255,.62)}
+    .role-switch{display:flex;padding:4px;background:#e5e9e4;border-radius:999px;gap:3px}.role-switch button{border:0;background:transparent;padding:8px 13px;border-radius:999px;font-weight:900;color:#5d6e79;cursor:pointer}.role-switch button.on{background:var(--white);color:var(--ink);box-shadow:0 3px 10px rgba(0,0,0,.08)}
+    .hero{padding:64px 0 32px}.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;background:#e7eee9;border-radius:999px;padding:7px 11px;color:var(--sea);font-weight:950;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+    h1{font:700 clamp(52px,7vw,90px)/.9 Georgia,"Times New Roman",serif;letter-spacing:-.055em;margin:20px 0 20px;max-width:760px}.hero p{max-width:680px;font-size:19px;color:var(--muted);margin:0 0 26px}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:13px 17px;background:var(--white);font-weight:950;cursor:pointer;color:var(--ink)}.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}.btn.soft{background:var(--mint);border-color:#b4d7cc}
+    .stage{min-height:520px;position:relative;border-radius:42px;background:linear-gradient(145deg,#d8eee7 0%,#dcecf4 52%,#f2dfd2 100%);overflow:hidden;border:1px solid #d2dcda;box-shadow:var(--shadow);padding:34px}
+    .stage:before,.stage:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.55)}.stage:before{width:250px;height:250px;right:-60px;top:-80px}.stage:after{width:180px;height:180px;left:-60px;bottom:-50px}
+    .stage-inner{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:space-between;gap:28px}.stage-label{font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;color:#36596a}.stage h2{font:700 38px/1 Georgia,serif;letter-spacing:-.03em;margin:8px 0 12px;max-width:480px}.stage p{margin:0;color:#526a78;max-width:480px}
+    .path{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;align-items:end}.step{min-height:95px;border-radius:20px;background:rgba(255,253,248,.82);border:1px solid rgba(255,255,255,.8);padding:13px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 8px 24px rgba(42,68,79,.06)}.step:nth-child(2){min-height:122px}.step:nth-child(3){min-height:150px}.step:nth-child(4){min-height:178px;background:var(--navy);color:white}.step small{font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;opacity:.7}.step b{font-size:14px;line-height:1.2}
+    .quick{padding:32px 0 18px}.quickbar{display:grid;grid-template-columns:1.3fr repeat(3,1fr);gap:12px}.quickintro{border-radius:24px;padding:22px;background:var(--navy);color:white}.quickintro b{display:block;font:700 27px Georgia,serif;margin-bottom:5px}.quickintro span{font-size:13px;color:#c9d8df}.quickitem{border-radius:24px;padding:20px;background:var(--white);border:1px solid var(--line);text-decoration:none;display:flex;flex-direction:column;justify-content:space-between;min-height:142px;transition:transform .15s ease,box-shadow .15s ease}.quickitem:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.qicon{height:38px;width:38px;border-radius:12px;background:var(--mint);display:grid;place-items:center;font-weight:950}.quickitem b{font-size:15px}.quickitem span{font-size:12px;color:var(--muted)}
+    .section{padding:54px 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:24px}.section-head h2{font:700 clamp(36px,4vw,55px)/1 Georgia,serif;letter-spacing:-.035em;margin:0}.section-head p{max-width:550px;color:var(--muted);margin:0}
+    .curriculum{border-radius:36px;overflow:hidden;background:var(--white);border:1px solid var(--line);box-shadow:var(--shadow)}
+    .programme-tabs{display:flex;gap:7px;padding:17px;border-bottom:1px solid var(--line);overflow:auto}.programme-tabs button{white-space:nowrap;border:1px solid var(--line);background:#f7f8f4;border-radius:999px;padding:9px 13px;font-weight:900;color:#586b78;cursor:pointer}.programme-tabs button.on{background:var(--navy);color:white;border-color:var(--navy)}
+    .subject-flow{display:flex;overflow-x:auto;gap:0;scroll-snap-type:x mandatory}.subject{min-width:230px;min-height:238px;padding:25px;border-right:1px solid var(--line);scroll-snap-align:start;display:flex;flex-direction:column;justify-content:space-between}.subject:last-child{border-right:0}.subject:nth-child(4n+1){background:#fffdf8}.subject:nth-child(4n+2){background:#f2f8f5}.subject:nth-child(4n+3){background:#f1f7fa}.subject:nth-child(4n+4){background:#fbf5ee}.subject small{font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:#80909a}.subject h3{font:700 27px/1 Georgia,serif;margin:12px 0}.subject p{font-size:13px;color:var(--muted);margin:0}.subject a{font-size:13px;font-weight:950;text-decoration:none;margin-top:18px}.subject a:hover{text-decoration:underline}
+    .workspace{display:grid;grid-template-columns:.8fr 1.2fr;gap:20px}.rail,.workmain{border-radius:32px;border:1px solid var(--line);background:var(--white);box-shadow:var(--shadow)}.rail{padding:26px}.rail h3,.workmain h3{font:700 28px Georgia,serif;margin:0 0 10px}.rail p{font-size:14px;color:var(--muted)}
+    .prefs{display:grid;gap:9px;margin-top:18px}.pref{border:1px solid var(--line);border-radius:15px;padding:12px 13px;background:#fff;display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:850}.toggle{width:42px;height:24px;border-radius:999px;background:#d5dcda;padding:3px;border:0;cursor:pointer}.toggle i{display:block;width:18px;height:18px;border-radius:50%;background:white;transition:transform .16s ease}.toggle.on{background:var(--sea)}.toggle.on i{transform:translateX(18px)}
+    .workmain{padding:26px}.statusline{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.statusline span{font-size:12px;color:var(--muted);font-weight:800}.journey{display:grid;gap:9px}.journey-row{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:14px;border-radius:18px;background:#f6f7f3;border:1px solid #e7eae6}.num{height:42px;width:42px;border-radius:14px;background:#e2ece8;display:grid;place-items:center;font-weight:950;color:var(--sea)}.journey-row b{display:block;font-size:14px}.journey-row small{color:var(--muted)}.tag{padding:7px 9px;border-radius:999px;background:#e7eee9;font-size:11px;font-weight:950;white-space:nowrap}.tag.review{background:#f6e8ca}.tag.ready{background:#d9eee7}
+    .teacher-only,.learner-only{display:none}.mode-teacher .teacher-only,.mode-learner .learner-only{display:block}
+    .teacher-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.teacher-tool{padding:17px;border-radius:18px;border:1px solid var(--line);background:#f8f7f2}.teacher-tool b{display:block;font-size:13px}.teacher-tool span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+    .principle{margin:20px 0 64px;border-radius:38px;background:var(--navy);color:white;padding:40px;display:grid;grid-template-columns:1fr .7fr;gap:30px;align-items:end;overflow:hidden;position:relative}.principle:after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;background:#214e62;right:-90px;top:-120px}.principle h2{font:700 clamp(38px,5vw,65px)/.95 Georgia,serif;letter-spacing:-.04em;margin:0;position:relative;z-index:1}.principle p{margin:0;color:#c9d8df;position:relative;z-index:1;font-size:16px}
+    .footer{padding:0 0 38px;color:#6a7c88;font-size:12px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+    @media(max-width:980px){nav{display:none}.hero-grid,.workspace,.principle{grid-template-columns:1fr}.stage{min-height:450px}.quickbar{grid-template-columns:1fr 1fr}.quickintro{grid-column:1/-1}.teacher-tools{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}}
+    @media(max-width:620px){.wrap{padding:0 16px}.topin{height:68px}.role-switch button{padding:7px 9px;font-size:12px}.hero{padding-top:40px}.stage{padding:24px;min-height:430px}.path{grid-template-columns:1fr 1fr}.step,.step:nth-child(2),.step:nth-child(3),.step:nth-child(4){min-height:100px}.quickbar{grid-template-columns:1fr}.quickintro{grid-column:auto}.section{padding:40px 0}.principle{padding:28px}.subject{min-width:205px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}.quickitem:hover{transform:none}}
+    :focus-visible{outline:3px solid #207a96;outline-offset:3px}
+  </style>
+</head>
+<body class="mode-learner">
+  <header class="top">
+    <div class="wrap topin">
+      <a class="brand" href="#top"><span class="mark">iL</span><span>iLEARN</span></a>
+      <nav aria-label="Primary navigation">
+        <a class="navlink" href="#curriculum">Curriculum</a>
+        <a class="navlink" href="#workspace">Workspace</a>
+        <a class="navlink" href="./learning-load-simulator.html">Load Simulator</a>
+        <a class="navlink" href="https://www.autismandme.ie/browse-resources">Resources</a>
+      </nav>
+      <div class="role-switch" aria-label="Preview role">
+        <button id="learnerMode" class="on" type="button" aria-pressed="true">Learner</button>
+        <button id="teacherMode" type="button" aria-pressed="false">Teacher</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="eyebrow">Pre-learning · Every subject · Your way</span>
+          <h1>Learning that adapts before the lesson starts.</h1>
+          <p class="learner-only">See what is coming, choose how information is presented, and arrive in class already knowing the shape of the learning.</p>
+          <p class="teacher-only">Build curriculum-grounded pre-learning, preview it as a learner, check the learning load, then decide what is ready to publish.</p>
+          <div class="hero-actions learner-only">
+            <a class="btn primary" href="https://www.autismandme.ie/learner-dashboard">Open my learning</a>
+            <a class="btn soft" href="./learning-load-simulator.html">Check learning load</a>
+          </div>
+          <div class="hero-actions teacher-only">
+            <a class="btn primary" href="https://www.autismandme.ie/create-pathway">Create a pathway</a>
+            <a class="btn soft" href="./learning-load-simulator.html">Check learning load</a>
+            <a class="btn" href="https://www.autismandme.ie/teacher-dashboard">Teacher dashboard</a>
+          </div>
+        </div>
+
+        <div class="stage" aria-label="Example iLEARN pathway">
+          <div class="stage-inner">
+            <div>
+              <span class="stage-label" id="stageLabel">Your next pathway</span>
+              <h2 id="stageTitle">Know the route before you begin.</h2>
+              <p id="stageText">Each pathway breaks learning into a clear sequence. You can change the way you access it without changing the learning goal.</p>
+            </div>
+            <div class="path" aria-hidden="true">
+              <div class="step"><small>01</small><b>Preview</b></div>
+              <div class="step"><small>02</small><b>Understand</b></div>
+              <div class="step"><small>03</small><b>Explore</b></div>
+              <div class="step"><small>04</small><b>Bring it to class</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quick">
+      <div class="wrap quickbar">
+        <div class="quickintro"><b>Start where you are.</b><span>One system for curriculum, pathways, resources and learning access.</span></div>
+        <a class="quickitem" href="./learning-load-simulator.html"><span class="qicon">↘</span><div><b>Learning Load Simulator</b><span>Spot avoidable barriers before class.</span></div></a>
+        <a class="quickitem learner-only" href="https://www.autismandme.ie/my-pathways"><span class="qicon">→</span><div><b>My pathways</b><span>Continue from where you left off.</span></div></a>
+        <a class="quickitem learner-only" href="https://www.autismandme.ie/browse-resources"><span class="qicon">◎</span><div><b>Browse resources</b><span>Find another way into the learning.</span></div></a>
+        <a class="quickitem teacher-only" href="https://www.autismandme.ie/create-pathway"><span class="qicon">＋</span><div><b>Create pathway</b><span>Start from programme, year and learning outcome.</span></div></a>
+        <a class="quickitem teacher-only" href="https://www.autismandme.ie/pathway-preview"><span class="qicon">✓</span><div><b>Teacher review</b><span>Preview before anything reaches learners.</span></div></a>
+      </div>
+    </section>
+
+    <section class="section" id="curriculum">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>The curriculum is the map.</h2>
+          <p>iLEARN is not one English demo or one virtual street. The same learning system can sit across programmes and subjects while keeping programme and year-group boundaries intact.</p>
+        </div>
+        <div class="curriculum">
+          <div class="programme-tabs" role="tablist" aria-label="Programme preview">
+            <button class="on" type="button" data-programme="Junior Cycle">Junior Cycle</button>
+            <button type="button" data-programme="Leaving Certificate">Leaving Certificate</button>
+            <button type="button" data-programme="LCA">LCA</button>
+          </div>
+          <div class="subject-flow" id="subjectFlow">
+            <article class="subject"><div><small data-p>Junior Cycle</small><h3>English</h3><p>Texts, language, writing, speaking, reading and critical response.</p></div><a href="https://www.autismandme.ie/create-pathway">Build from an outcome →</a></article>
+            <article class="subject"><div><small data-p>Junior Cycle</small><h3>Maths</h3><p>Make the process visible before the pressure of solving in real time.</p></div><a href="https://www.autismandme.ie/create-pathway">Build from an outcome →</a></article>
+            <article class="subject"><div><small data-p>Junior Cycle</small><h3>Science</h3><p>Pre-learn concepts, vocabulary, practical sequences and key relationships.</p></div><a href="https://www.autismandme.ie/create-pathway">Build from an outcome →</a></article>
+            <article class="subject"><div><small data-p>Junior Cycle</small><h3>History</h3><p>Build context, timelines, sources and the questions that make evidence meaningful.</p></div><a href="https://www.autismandme.ie/create-pathway">Build from an outcome →</a></article>
+            <article class="subject"><div><small data-p>Junior Cycle</small><h3>Gaeilge</h3><p>Reduce language uncertainty with vocabulary, context and multiple ways to rehearse.</p></div><a href="https://www.autismandme.ie/create-pathway">Build from an outcome →</a></article>
+            <article class="subject"><div><small data-p>Junior Cycle</small><h3>Geography</h3><p>Connect places, systems, processes and visual information before class discussion.</p></div><a href="https://www.autismandme.ie/create-pathway">Build from an outcome →</a></article>
+            <article class="subject"><div><small data-p>Junior Cycle</small><h3>Business</h3><p>Make unfamiliar systems concrete with examples, sequences and choice of format.</p></div><a href="https://www.autismandme.ie/create-pathway">Build from an outcome →</a></article>
+            <article class="subject"><div><small data-p>Junior Cycle</small><h3>SPHE</h3><p>Prepare for sensitive learning with clear expectations, language and learner control.</p></div><a href="https://www.autismandme.ie/create-pathway">Build from an outcome →</a></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="workspace">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 class="learner-only">My learning, my access.</h2>
+          <h2 class="teacher-only">Teacher control stays visible.</h2>
+          <p class="learner-only">Preferences change the route into learning, not the learning goal.</p>
+          <p class="teacher-only">Curriculum first. Accessibility built in. Quality checked. Teacher approval before learner-facing publication.</p>
+        </div>
+
+        <div class="workspace">
+          <aside class="rail learner-only">
+            <h3>How I learn today</h3>
+            <p>These choices are about presentation and pace. They do not lower the goal.</p>
+            <div class="prefs">
+              <div class="pref"><span>Plain language</span><button class="toggle on" type="button" aria-label="Plain language" aria-pressed="true"><i></i></button></div>
+              <div class="pref"><span>Show the sequence</span><button class="toggle on" type="button" aria-label="Show the sequence" aria-pressed="true"><i></i></button></div>
+              <div class="pref"><span>Reduce motion</span><button class="toggle" type="button" aria-label="Reduce motion" aria-pressed="false"><i></i></button></div>
+              <div class="pref"><span>One step at a time</span><button class="toggle on" type="button" aria-label="One step at a time" aria-pressed="true"><i></i></button></div>
+            </div>
+          </aside>
+
+          <aside class="rail teacher-only">
+            <h3>Build with guardrails</h3>
+            <p>A pathway starts with the programme, year group and outcome. Resource selection and accessibility support the goal rather than replacing it.</p>
+            <div class="teacher-tools">
+              <div class="teacher-tool"><b>Curriculum check</b><span>Exact programme and year.</span></div>
+              <div class="teacher-tool"><b>Load check</b><span>Spot avoidable barriers.</span></div>
+              <div class="teacher-tool"><b>Teacher gate</b><span>You decide what is published.</span></div>
+            </div>
+          </aside>
+
+          <div class="workmain">
+            <div class="statusline"><h3 id="workTitle">Today’s learning</h3><span id="workStatus">3 pathways ready</span></div>
+            <div class="journey" id="journey">
+              <div class="journey-row"><span class="num">01</span><div><b>Maths · Algebra</b><small>See the pattern before solving.</small></div><span class="tag ready">Ready</span></div>
+              <div class="journey-row"><span class="num">02</span><div><b>Science · Chemical reactions</b><small>Vocabulary, sequence and practical preview.</small></div><span class="tag ready">Ready</span></div>
+              <div class="journey-row"><span class="num">03</span><div><b>History · Working with evidence</b><small>Context, sources and one clear question.</small></div><span class="tag review">Next</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="principle">
+        <h2>The system adapts.<br />The learner does not have to.</h2>
+        <p>Pre-learning reduces uncertainty. UDL creates genuine choices. The curriculum goal stays clear. The teacher remains the publication authority.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap footer"><span>iLEARN · Autism &amp; Me</span><span>Current platform preview · whole-curriculum direction</span></footer>
+
+  <script>
+    const body=document.body;
+    const learner=document.getElementById('learnerMode');
+    const teacher=document.getElementById('teacherMode');
+    const stageLabel=document.getElementById('stageLabel');
+    const stageTitle=document.getElementById('stageTitle');
+    const stageText=document.getElementById('stageText');
+    const workTitle=document.getElementById('workTitle');
+    const workStatus=document.getElementById('workStatus');
+    const journey=document.getElementById('journey');
+
+    function setMode(mode){
+      body.classList.toggle('mode-learner',mode==='learner');
+      body.classList.toggle('mode-teacher',mode==='teacher');
+      learner.classList.toggle('on',mode==='learner');teacher.classList.toggle('on',mode==='teacher');
+      learner.setAttribute('aria-pressed',mode==='learner');teacher.setAttribute('aria-pressed',mode==='teacher');
+      if(mode==='teacher'){
+        stageLabel.textContent='Teacher workflow';stageTitle.textContent='From curriculum outcome to learner-ready pathway.';
+        stageText.textContent='Build, check accessibility and learning load, preview the learner experience, then approve or send it back for changes.';
+        workTitle.textContent='Pathways needing attention';workStatus.textContent='Teacher approval controls publication';
+        journey.innerHTML=`<div class="journey-row"><span class="num">01</span><div><b>Maths · Linear relationships</b><small>Curriculum and resource checks passed.</small></div><span class="tag review">Review</span></div><div class="journey-row"><span class="num">02</span><div><b>Science · Ecosystems</b><small>Accessibility alternatives added.</small></div><span class="tag review">Review</span></div><div class="journey-row"><span class="num">03</span><div><b>English · Writing for purpose</b><small>Draft saved. Not published.</small></div><span class="tag">Draft</span></div>`;
+      }else{
+        stageLabel.textContent='Your next pathway';stageTitle.textContent='Know the route before you begin.';
+        stageText.textContent='Each pathway breaks learning into a clear sequence. You can change the way you access it without changing the learning goal.';
+        workTitle.textContent='Today’s learning';workStatus.textContent='3 pathways ready';
+        journey.innerHTML=`<div class="journey-row"><span class="num">01</span><div><b>Maths · Algebra</b><small>See the pattern before solving.</small></div><span class="tag ready">Ready</span></div><div class="journey-row"><span class="num">02</span><div><b>Science · Chemical reactions</b><small>Vocabulary, sequence and practical preview.</small></div><span class="tag ready">Ready</span></div><div class="journey-row"><span class="num">03</span><div><b>History · Working with evidence</b><small>Context, sources and one clear question.</small></div><span class="tag review">Next</span></div>`;
+      }
+      localStorage.setItem('ilearn-preview-role',mode);
+    }
+    learner.addEventListener('click',()=>setMode('learner'));teacher.addEventListener('click',()=>setMode('teacher'));
+    document.querySelectorAll('.toggle').forEach(t=>t.addEventListener('click',()=>{const on=!t.classList.contains('on');t.classList.toggle('on',on);t.setAttribute('aria-pressed',on)}));
+    document.querySelectorAll('[data-programme]').forEach(tab=>tab.addEventListener('click',()=>{
+      document.querySelectorAll('[data-programme]').forEach(b=>b.classList.remove('on'));tab.classList.add('on');
+      document.querySelectorAll('[data-p]').forEach(p=>p.textContent=tab.dataset.programme);
+    }));
+    setMode(localStorage.getItem('ilearn-preview-role')||'learner');
+  </script>
+</body>
+</html>
