@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#17324d" />
+  <title>iLEARN Learning Load Simulator</title>
+  <style>
+    :root{
+      --ink:#183044;--muted:#607284;--paper:#f7f4ec;--card:#fffdf8;--line:#d8dfdf;
+      --blue:#245d72;--blue2:#17324d;--mint:#d9eee7;--gold:#e5b45d;--rose:#f3ded8;
+      --shadow:0 18px 50px rgba(35,52,66,.10);--radius:28px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+    button,input{font:inherit}
+    button,a{touch-action:manipulation}
+    a{color:inherit}
+    .shell{max-width:1240px;margin:0 auto;padding:24px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 0 24px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.02em;text-decoration:none}
+    .mark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--blue2);color:white;font-size:15px;box-shadow:0 8px 18px rgba(23,50,77,.18)}
+    .back{border:1px solid var(--line);background:rgba(255,255,255,.66);border-radius:999px;padding:10px 15px;text-decoration:none;font-weight:800}
+    .intro{display:grid;grid-template-columns:1.35fr .65fr;gap:22px;margin-bottom:22px}
+    .hero,.score-card,.panel{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:var(--radius)}
+    .hero{padding:34px;position:relative;overflow:hidden}
+    .hero:after{content:"";position:absolute;width:230px;height:230px;border-radius:50%;right:-70px;top:-90px;background:var(--mint);opacity:.75}
+    .eyebrow{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:#eef4f5;color:var(--blue);font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+    h1{position:relative;z-index:1;margin:17px 0 12px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(42px,6vw,76px);line-height:.95;letter-spacing:-.045em;max-width:760px}
+    .hero p{position:relative;z-index:1;max-width:720px;margin:0;color:var(--muted);font-size:18px}
+    .score-card{padding:28px;display:flex;flex-direction:column;justify-content:space-between;min-height:280px}
+    .score-label{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+    .score-wrap{display:flex;align-items:flex-end;gap:12px;margin:10px 0}
+    .score{font:700 clamp(62px,8vw,98px)/.85 Georgia,serif;letter-spacing:-.06em}
+    .outof{font-weight:800;color:var(--muted);padding-bottom:7px}
+    .level{display:inline-flex;width:max-content;padding:8px 12px;border-radius:999px;background:var(--mint);font-weight:900}
+    .meter{height:11px;border-radius:999px;background:#e7eceb;overflow:hidden;margin-top:18px}
+    .meter>span{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width .25s ease}
+    .grid{display:grid;grid-template-columns:1fr .82fr;gap:22px;align-items:start}
+    .panel{padding:28px}
+    .panel h2{margin:0 0 6px;font:700 30px/1.1 Georgia,serif;letter-spacing:-.02em}
+    .panel .lead{margin:0 0 24px;color:var(--muted)}
+    .dimension{padding:17px 0;border-top:1px solid var(--line)}
+    .dimension:first-of-type{border-top:0;padding-top:4px}
+    .dim-head{display:flex;justify-content:space-between;gap:18px;align-items:start;margin-bottom:10px}
+    .dim-title{font-weight:900}
+    .dim-help{font-size:13px;color:var(--muted);margin-top:3px;max-width:650px}
+    .value{min-width:40px;height:34px;border-radius:11px;background:#eef4f5;display:grid;place-items:center;font-weight:900;color:var(--blue)}
+    input[type="range"]{width:100%;accent-color:var(--blue);cursor:pointer}
+    .scale{display:flex;justify-content:space-between;color:#7d8a95;font-size:11px;margin-top:4px}
+    .supports{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+    .support{border:1px solid var(--line);background:white;border-radius:16px;padding:13px 14px;text-align:left;font-weight:800;cursor:pointer;color:var(--ink);transition:transform .15s ease,border-color .15s ease,background .15s ease}
+    .support:hover{transform:translateY(-1px)}
+    .support[aria-pressed="true"]{background:var(--mint);border-color:#8ebcab}
+    .support small{display:block;color:var(--muted);font-weight:600;margin-top:2px}
+    .summary{margin-top:22px;padding:20px;border-radius:22px;background:#eef4f5}
+    .summary h3{margin:0 0 10px;font:700 22px Georgia,serif}
+    .summary ul{margin:0;padding-left:20px;color:#42586b}
+    .summary li+li{margin-top:7px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+    .btn{border:1px solid var(--line);background:white;color:var(--ink);border-radius:14px;padding:12px 16px;font-weight:900;cursor:pointer}
+    .btn.primary{background:var(--blue2);color:white;border-color:var(--blue2)}
+    .note{font-size:12px;color:#6e7d89;margin-top:18px}
+    .micro{margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .micro>div{border-radius:18px;padding:15px;background:#fff;border:1px solid var(--line)}
+    .micro b{display:block;font-size:13px;margin-bottom:3px}
+    .micro span{font-size:12px;color:var(--muted)}
+    .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);padding:11px 16px;border-radius:999px;background:var(--blue2);color:#fff;font-weight:800;opacity:0;pointer-events:none;transition:.2s ease;box-shadow:var(--shadow)}
+    .toast.on{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:900px){.intro,.grid{grid-template-columns:1fr}.score-card{min-height:auto}.hero{padding:27px}.supports{grid-template-columns:1fr}.micro{grid-template-columns:1fr}.shell{padding:16px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}.support:hover{transform:none}}
+    :focus-visible{outline:3px solid #1e7697;outline-offset:3px}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="./ilearn-current-working-v2.html"><span class="mark">iL</span><span>iLEARN · Autism &amp; Me</span></a>
+      <a class="back" href="./ilearn-current-working-v2.html">← Back to iLEARN</a>
+    </header>
+
+    <section class="intro" aria-labelledby="pageTitle">
+      <div class="hero">
+        <span class="eyebrow">Planning tool · UDL first</span>
+        <h1 id="pageTitle">Learning Load Simulator</h1>
+        <p>See where a lesson may become harder to access before a learner reaches it. Adjust the demands, add supports, and watch the load change.</p>
+      </div>
+      <aside class="score-card" aria-live="polite">
+        <div>
+          <div class="score-label">Estimated learning load</div>
+          <div class="score-wrap"><span class="score" id="score">38</span><span class="outof">/ 100</span></div>
+          <span class="level" id="level">Watch the load</span>
+        </div>
+        <div class="meter" aria-hidden="true"><span id="meter"></span></div>
+      </aside>
+    </section>
+
+    <main class="grid">
+      <section class="panel" aria-labelledby="demandsHeading">
+        <h2 id="demandsHeading">Lesson demands</h2>
+        <p class="lead">Move each control from low to high. There is no “good” score. The goal is to make the learning goal easier to reach.</p>
+
+        <div id="dimensions"></div>
+
+        <div class="micro" aria-label="How to use this tool">
+          <div><b>1 · Set the demands</b><span>Describe the lesson as it is now.</span></div>
+          <div><b>2 · Add supports</b><span>Choose changes you can genuinely offer.</span></div>
+          <div><b>3 · Compare</b><span>Keep the learning goal. Reduce avoidable barriers.</span></div>
+        </div>
+      </section>
+
+      <aside class="panel" aria-labelledby="supportsHeading">
+        <h2 id="supportsHeading">Supports available</h2>
+        <p class="lead">Turn on supports that are actually available in this lesson.</p>
+        <div class="supports" id="supports"></div>
+
+        <div class="summary" aria-live="polite">
+          <h3>What could help?</h3>
+          <ul id="suggestions"></ul>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="copyBtn" type="button">Copy lesson summary</button>
+          <button class="btn" id="resetBtn" type="button">Reset</button>
+        </div>
+        <p class="note">This simulator is a planning aid, not a clinical or diagnostic tool. It does not infer a learner’s diagnosis or ability.</p>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status">Summary copied</div>
+
+  <script>
+    const dimensions = [
+      {id:'language',label:'Language demand',help:'Amount of dense, abstract or unfamiliar language used at once.',weight:1.1,tip:'Use plain language, pre-teach key words, and pair important text with a visual.'},
+      {id:'steps',label:'Steps held in mind',help:'How many instructions, decisions or pieces of information must be managed together.',weight:1.15,tip:'Chunk the task into visible steps and reveal one part at a time.'},
+      {id:'sensory',label:'Sensory demand',help:'Noise, movement, lighting, clutter or competing sensory information.',weight:1.0,tip:'Reduce avoidable sensory input or offer a quieter way to take part.'},
+      {id:'social',label:'Social demand',help:'Group work, performance, turn-taking, negotiation or reading social cues.',weight:.9,tip:'Offer clear roles, predictable turn-taking, or an independent route to the same goal.'},
+      {id:'time',label:'Time pressure',help:'Speed, countdowns, short response windows or pressure to keep pace with others.',weight:1.0,tip:'Build in processing time and avoid using speed as a proxy for understanding.'},
+      {id:'change',label:'Transitions & uncertainty',help:'Unexpected changes, switching tasks, unclear endings or unknown next steps.',weight:1.05,tip:'Make the sequence and finish point visible, and signal changes before they happen.'}
+    ];
+    const supportData = [
+      {id:'visual',label:'Visual sequence',detail:'Show what happens next',reduction:5},
+      {id:'chunking',label:'Chunked steps',detail:'One manageable part at a time',reduction:6},
+      {id:'processing',label:'Processing time',detail:'More time before a response',reduction:5},
+      {id:'quiet',label:'Lower sensory option',detail:'Quieter or less visually busy route',reduction:5},
+      {id:'plain',label:'Plain language',detail:'Clear wording without lowering the goal',reduction:5},
+      {id:'choice',label:'Choice of response',detail:'Equivalent ways to show learning',reduction:4}
+    ];
+
+    const saved = JSON.parse(localStorage.getItem('ilearn-load-simulator') || '{}');
+    const state = {
+      values:Object.assign({language:2,steps:2,sensory:1,social:2,time:2,change:1},saved.values||{}),
+      supports:new Set(saved.supports||['visual','chunking'])
+    };
+
+    const dimensionsEl = document.getElementById('dimensions');
+    const supportsEl = document.getElementById('supports');
+    const scoreEl = document.getElementById('score');
+    const levelEl = document.getElementById('level');
+    const meterEl = document.getElementById('meter');
+    const suggestionsEl = document.getElementById('suggestions');
+    const toast = document.getElementById('toast');
+
+    dimensions.forEach(d => {
+      const row = document.createElement('div');
+      row.className = 'dimension';
+      row.innerHTML = `
+        <div class="dim-head">
+          <div><div class="dim-title">${d.label}</div><div class="dim-help">${d.help}</div></div>
+          <output class="value" id="${d.id}Value" for="${d.id}">${state.values[d.id]}</output>
+        </div>
+        <input id="${d.id}" type="range" min="0" max="4" step="1" value="${state.values[d.id]}" aria-label="${d.label}" />
+        <div class="scale" aria-hidden="true"><span>Low</span><span>High</span></div>`;
+      dimensionsEl.appendChild(row);
+      row.querySelector('input').addEventListener('input', e => {
+        state.values[d.id] = Number(e.target.value);
+        document.getElementById(d.id+'Value').textContent = e.target.value;
+        update();
+      });
+    });
+
+    supportData.forEach(s => {
+      const button = document.createElement('button');
+      button.className = 'support';
+      button.type = 'button';
+      button.setAttribute('aria-pressed', state.supports.has(s.id));
+      button.innerHTML = `${s.label}<small>${s.detail}</small>`;
+      button.addEventListener('click', () => {
+        state.supports.has(s.id) ? state.supports.delete(s.id) : state.supports.add(s.id);
+        button.setAttribute('aria-pressed', state.supports.has(s.id));
+        update();
+      });
+      supportsEl.appendChild(button);
+    });
+
+    function calculate(){
+      const max = dimensions.reduce((sum,d)=>sum + (4*d.weight),0);
+      const raw = dimensions.reduce((sum,d)=>sum + (state.values[d.id]*d.weight),0);
+      const base = (raw/max)*100;
+      const reduction = supportData.filter(s=>state.supports.has(s.id)).reduce((sum,s)=>sum+s.reduction,0);
+      return Math.max(0,Math.min(100,Math.round(base-reduction)));
+    }
+
+    function labelFor(score){
+      if(score < 25) return 'Lower load';
+      if(score < 50) return 'Watch the load';
+      if(score < 75) return 'High load';
+      return 'Very high load';
+    }
+
+    function suggestions(){
+      const ranked = dimensions.slice().sort((a,b)=>state.values[b.id]*b.weight-state.values[a.id]*a.weight);
+      const active = ranked.filter(d=>state.values[d.id]>=2).slice(0,3);
+      const tips = active.map(d=>d.tip);
+      if(!tips.length) tips.push('The current demands are relatively low. Check that the learning goal is still clear and meaningful.');
+      if(state.supports.size===0) tips.push('No supports are selected yet. Add only supports that can genuinely be available to the learner.');
+      return tips;
+    }
+
+    function save(){
+      localStorage.setItem('ilearn-load-simulator',JSON.stringify({values:state.values,supports:[...state.supports]}));
+    }
+
+    function update(){
+      const score = calculate();
+      scoreEl.textContent = score;
+      levelEl.textContent = labelFor(score);
+      meterEl.style.width = score + '%';
+      suggestionsEl.innerHTML = suggestions().map(t=>`<li>${t}</li>`).join('');
+      save();
+    }
+
+    function summaryText(){
+      const score = calculate();
+      const demandLines = dimensions.map(d=>`${d.label}: ${state.values[d.id]}/4`).join('\n');
+      const enabled = supportData.filter(s=>state.supports.has(s.id)).map(s=>s.label).join(', ') || 'None selected';
+      return `iLEARN Learning Load Simulator\nEstimated load: ${score}/100 — ${labelFor(score)}\n\nLesson demands\n${demandLines}\n\nSupports available\n${enabled}\n\nPossible adjustments\n- ${suggestions().join('\n- ')}\n\nPlanning aid only — not a diagnostic measure.`;
+    }
+
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      try{
+        await navigator.clipboard.writeText(summaryText());
+        toast.textContent='Summary copied';
+      }catch(e){
+        const ta=document.createElement('textarea');ta.value=summaryText();document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast.textContent='Summary copied';
+      }
+      toast.classList.add('on');setTimeout(()=>toast.classList.remove('on'),1600);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      state.values={language:2,steps:2,sensory:1,social:2,time:2,change:1};
+      state.supports=new Set(['visual','chunking']);
+      dimensions.forEach(d=>{document.getElementById(d.id).value=state.values[d.id];document.getElementById(d.id+'Value').textContent=state.values[d.id]});
+      [...supportsEl.children].forEach((button,i)=>button.setAttribute('aria-pressed',state.supports.has(supportData[i].id)));
+      update();
+    });
+
+    update();
+  </script>
+</body>
+</html>
