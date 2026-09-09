@@ -1,12 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import './ilearn-v2.css'
 import {
-  AgentKernel,
   DEFAULT_AGENT_POLICIES,
   type AgentKey,
-  type AgentRequest,
+  type ApprovalDecision,
 } from './lib/agent-os'
+import { usePipelineRun } from './hooks/usePipelineRun'
 
 const agentCopy: Record<AgentKey, string> = {
   curriculum: 'Checks programme, level and official curriculum constraints.',
@@ -25,33 +25,67 @@ const card: React.CSSProperties = {
   background: 'rgba(255,255,255,.035)',
 }
 
+const statusStyles: Record<string, React.CSSProperties> = {
+  idle: { color: '#8f97a3' },
+  running: { color: '#d8b978' },
+  success: { color: '#8fca95' },
+  failure: { color: '#ef8d8d' },
+  blocked: { color: '#e8b67a' },
+}
+
+function decisionLabel(decision: ApprovalDecision): string {
+  switch (decision) {
+    case 'approve':
+      return 'Approve'
+    case 'approve-with-edits':
+      return 'Approve with edits'
+    case 'request-changes':
+      return 'Request changes'
+    case 'reject':
+      return 'Reject'
+  }
+}
+
 export default function PathwayV2() {
-  const kernel = useMemo(() => new AgentKernel(), [])
   const [programme, setProgramme] = useState('Junior Cycle')
   const [subject, setSubject] = useState('English')
   const [yearGroup, setYearGroup] = useState('')
   const [topic, setTopic] = useState('')
   const [teacherIntent, setTeacherIntent] = useState('')
+  const [teacherNotes, setTeacherNotes] = useState('')
   const [immersive, setImmersive] = useState(false)
-  const [request, setRequest] = useState<AgentRequest | null>(null)
 
-  const run = useMemo(() => (request ? kernel.createRun(request) : null), [kernel, request])
+  const {
+    run,
+    busy,
+    error,
+    prepareRun,
+    runAllStages,
+    runSingleStage,
+    retryStage,
+    decide,
+    canRun,
+  } = usePipelineRun()
 
-  function prepare() {
+  async function prepare() {
     const cleanTopic = topic.trim()
     const cleanIntent = teacherIntent.trim()
     if (!cleanTopic || !cleanIntent) return
 
-    setRequest({
+    await prepareRun({
       id: `run-${Date.now()}`,
       programme,
       subject,
       yearGroup: yearGroup.trim() || undefined,
       topic: cleanTopic,
       teacherIntent: cleanIntent,
-      outputModes: immersive ? ['text', 'visual', 'interactive', 'immersive'] : ['text', 'visual'],
+      outputModes: immersive
+        ? ['text', 'visual', 'interactive', 'immersive']
+        : ['text', 'visual'],
     })
   }
+
+  const pipeline = run?.plan ?? DEFAULT_AGENT_POLICIES.map((policy) => policy.key)
 
   return (
     <main
@@ -67,7 +101,7 @@ export default function PathwayV2() {
         <p style={{ color: '#d8b978', fontSize: 11, letterSpacing: '.18em', fontWeight: 800 }}>
           iLEARN · TEACHER OPERATING SYSTEM
         </p>
-        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(42px,7vw,76px)', lineHeight: .96, margin: '8px 0 14px' }}>
+        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(42px,7vw,76px)', lineHeight: 0.96, margin: '8px 0 14px' }}>
           AI does the routine work. You make the call.
         </h1>
         <p style={{ maxWidth: 780, color: '#bdb7ac', lineHeight: 1.65, fontSize: 17 }}>
@@ -109,9 +143,21 @@ export default function PathwayV2() {
             </label>
           </div>
 
-          <button onClick={prepare} style={{ marginTop: 16, border: 0, borderRadius: 999, padding: '13px 20px', fontWeight: 800, background: '#d8b978', color: '#111' }}>
-            Prepare governed workflow
-          </button>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 16 }}>
+            <button onClick={prepare} disabled={busy} style={{ border: 0, borderRadius: 999, padding: '13px 20px', fontWeight: 800, background: '#d8b978', color: '#111' }}>
+              Prepare governed workflow
+            </button>
+            <button onClick={runAllStages} disabled={!run || busy} style={{ border: '1px solid rgba(216,185,120,.45)', borderRadius: 999, padding: '13px 20px', fontWeight: 700, background: 'transparent', color: '#efd69a' }}>
+              Run pipeline to teacher gate
+            </button>
+          </div>
+
+          {run && (
+            <p style={{ marginTop: 12, color: '#aaa', fontSize: 13 }}>
+              Run status: <strong style={{ color: '#f5f1e7' }}>{run.status}</strong>
+            </p>
+          )}
+          {error && <p style={{ marginTop: 8, color: '#ef8d8d', fontSize: 13 }}>{error}</p>}
         </section>
 
         <section style={{ marginTop: 28 }} aria-label="Agent pipeline">
@@ -124,16 +170,19 @@ export default function PathwayV2() {
           </div>
 
           <div style={{ display: 'grid', gap: 10 }}>
-            {(run?.plan ?? DEFAULT_AGENT_POLICIES.map((policy) => policy.key)).map((key, index) => {
+            {pipeline.map((key, index) => {
               const policy = DEFAULT_AGENT_POLICIES.find((item) => item.key === key)
               if (!policy) return null
+              const step = run?.steps.find((item) => item.agent === key)
+              const permission = run ? canRun(key) : { allowed: false, reason: 'Prepare a workflow first.' }
               const isTeacherGate = key === 'approval'
+
               return (
                 <motion.article
                   key={key}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * .035 }}
+                  transition={{ delay: index * 0.035 }}
                   style={{
                     ...card,
                     display: 'grid',
@@ -150,15 +199,82 @@ export default function PathwayV2() {
                   <div>
                     <strong>{policy.name}</strong>
                     <p style={{ color: '#aaa', margin: '5px 0 0', lineHeight: 1.45, fontSize: 13 }}>{agentCopy[key]}</p>
+                    <p style={{ ...statusStyles[step?.status ?? 'idle'], margin: '6px 0 0', fontSize: 12, letterSpacing: '.03em', textTransform: 'uppercase' }}>
+                      {step?.status ?? 'idle'}
+                    </p>
+                    {!!step?.message && <p style={{ color: '#9ca3af', margin: '4px 0 0', fontSize: 12 }}>{step.message}</p>}
+                    {!!step?.blockingIssues.length && (
+                      <p style={{ color: '#efb081', margin: '4px 0 0', fontSize: 12 }}>{step.blockingIssues[0]}</p>
+                    )}
                   </div>
-                  <span style={{ color: isTeacherGate ? '#efd69a' : '#829487', fontSize: 10, letterSpacing: '.1em' }}>
-                    {isTeacherGate ? 'TEACHER REQUIRED' : policy.autoRun ? 'AUTOMATED' : 'CONTROLLED'}
-                  </span>
+                  <div style={{ display: 'grid', justifyItems: 'end', gap: 6 }}>
+                    <span style={{ color: isTeacherGate ? '#efd69a' : '#829487', fontSize: 10, letterSpacing: '.1em' }}>
+                      {isTeacherGate ? 'TEACHER REQUIRED' : policy.autoRun ? 'AUTOMATED' : 'CONTROLLED'}
+                    </span>
+
+                    {!isTeacherGate && (
+                      <>
+                        <button
+                          onClick={() => runSingleStage(key)}
+                          disabled={!run || busy || !permission.allowed}
+                          style={{ border: '1px solid rgba(255,255,255,.25)', borderRadius: 999, padding: '6px 12px', background: 'transparent', color: '#f5f1e7', fontSize: 12 }}
+                        >
+                          Run stage
+                        </button>
+                        <button
+                          onClick={() => retryStage(key)}
+                          disabled={!run || busy || !step || (step.status !== 'failure' && step.status !== 'blocked')}
+                          style={{ border: '1px solid rgba(216,185,120,.35)', borderRadius: 999, padding: '6px 12px', background: 'transparent', color: '#efd69a', fontSize: 12 }}
+                        >
+                          Retry
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </motion.article>
               )
             })}
           </div>
         </section>
+
+        {run && run.plan.includes('approval') && (
+          <section style={{ ...card, marginTop: 20 }} aria-label="Teacher approval gate">
+            <h3 style={{ marginTop: 0 }}>Teacher Approval Gate</h3>
+            <p style={{ color: '#aaa', marginTop: 6, fontSize: 14 }}>
+              Stage 7 is always manual. Quality must pass before these actions are enabled.
+            </p>
+            <textarea
+              value={teacherNotes}
+              onChange={(event) => setTeacherNotes(event.target.value)}
+              rows={2}
+              placeholder="Optional approval/review notes"
+              style={{ width: '100%', padding: 12, borderRadius: 12, resize: 'vertical', marginTop: 8 }}
+            />
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
+              {(['approve', 'approve-with-edits', 'request-changes', 'reject'] as const).map((decision) => {
+                const qualityStep = run.steps.find((step) => step.agent === 'quality')
+                const disabled = busy || qualityStep?.status !== 'success'
+                return (
+                  <button
+                    key={decision}
+                    onClick={() => decide(decision, teacherNotes.trim() || undefined)}
+                    disabled={disabled}
+                    style={{
+                      border: '1px solid rgba(216,185,120,.45)',
+                      borderRadius: 999,
+                      padding: '8px 12px',
+                      background: disabled ? 'rgba(255,255,255,.04)' : 'transparent',
+                      color: disabled ? '#999' : '#efd69a',
+                      fontSize: 12,
+                    }}
+                  >
+                    {decisionLabel(decision)}
+                  </button>
+                )
+              })}
+            </div>
+          </section>
+        )}
       </section>
     </main>
   )
