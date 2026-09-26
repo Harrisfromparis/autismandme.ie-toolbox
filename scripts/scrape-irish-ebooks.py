@@ -97,12 +97,14 @@ def classify(publisher, url, parser):
     publisher_programme = publisher == "Folens" and "/pages/" in url and re.search(r"ebook|e-book", " ".join(parser.page_text), re.I)
     if not title or not (ebook_named or publisher_programme):
         return None
+    if publisher == "Educate.ie" and not re.search(r"ebook|e-book", title, re.I): return None
     if "junior cycle" in text or "junior cert" in text: cycle = "JC"
     elif "leaving cert" in text or "senior cycle" in text: cycle = "LC"
     else: cycle = ""
-    subject = next((name for name in SUBJECTS if re.search(r"\b" + re.escape(name.lower()) + r"\b", title.lower())), "")
-    if not subject:
-        subject = next((name for name in SUBJECTS if re.search(r"\b" + re.escape(name.lower()) + r"\b", description.lower())), "")
+    def first_subject(value):
+        found = [(match.start(), name) for name in SUBJECTS for match in re.finditer(r"\b" + re.escape(name.lower()) + r"\b", value.lower())]
+        return min(found)[1] if found else ""
+    subject = first_subject(title) or first_subject(description)
     if not cycle and not subject and "post-primary" not in text and "post primary" not in text: return None
     return {
         "publisher": publisher, "title": title[:250], "description": re.sub(r"\s+", " ", description)[:500],
