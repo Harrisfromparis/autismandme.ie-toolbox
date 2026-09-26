@@ -70,6 +70,25 @@ Secrets remain in Wix Secrets Manager:
 - `OLLAMA_API_KEY`
 - `HUGGING_FACE_TOKEN`
 
+## Lesson planning and SEC link integration
+
+The backend now accepts optional `planningNotes` and `udl` choices in the teacher brief. It keeps the official outcome lookup and verified resource gate in place. Only resources already approved, marked `Verified`, and mapped to selected outcomes can appear in a learner draft. SEC paper and marking-scheme links use resource types `ExamPaper` and `MarkingScheme`; the generator may link them as optional practice and may not invent questions from a PDF it has not read.
+
+To prepare a reviewable data bundle, run:
+
+```bash
+node scripts/build-ilearn-data.mjs \
+  --outcomes official-outcomes.json \
+  --planning planning-content.json \
+  --resources approved-resources.json \
+  --exams SEC_exam_papers_and_marking_schemes_2010-2025.csv \
+  --output ilearn-data-bundle.json
+```
+
+The three JSON inputs must be arrays exported from the existing collections. Planning and resource records need explicit `outcomeIds` for joining. The script preserves official outcomes, attaches explicitly mapped planning and verified resources, and marks subject-level exam links as **unverified, unapproved, and unmapped candidates**. Review their level, language, PDF link, relevance and usage terms before adding individual exam links to `iLearnResources` and `iLearnOutcomeResourceMap`. Do not publish the generated bundle or the source PDFs to learners as a substitute for the approval workflow.
+
+The page code reads an optional `#planningNotesInput`. If that element is not present, generation still works. Add it in Wix Editor to let teachers supply planning notes. This GitHub repository is a deployment source; changing it does not by itself update the live Wix site until the site Git integration deploys the backend and page files.
+
 ### 2. Create Pathway page code
 Source:
 `wix-pages/create-pathway-agent-os.js`
