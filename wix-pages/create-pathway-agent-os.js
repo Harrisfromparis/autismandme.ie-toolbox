@@ -9,13 +9,15 @@ import {
 const OUTCOMES = "iLearnCurriculumOutcomes";
 const MAX_SELECTED_OUTCOMES = 5;
 const selectedOutcomes = new Map();
+let suggestedOutcomes = [];
 
 $w.onReady(async function () {
   setupNavigation();
   setupOutcomeRepeater();
   setupSearch();
   setupGenerateButton();
-  await Promise.all([loadOutcomes(), refreshAccessStatus()]);
+  await Promise.all([loadSubjectChoices(), refreshAccessStatus()]);
+  await loadOutcomes();
 });
 
 function setupNavigation() {
@@ -23,7 +25,10 @@ function setupNavigation() {
   onClick("#classBackButton", () => changeState("programmeState"));
   onClick("#classNextButton", () => changeState("aimState"));
   onClick("#aimBackButton", () => changeState("classState"));
-  onClick("#aimNextButton", () => changeState("outcomesState"));
+  onClick("#aimNextButton", () => {
+    showReviewInformation();
+    changeState("reviewState");
+  });
   onClick("#outcomesBackButton", () => changeState("aimState"));
   onClick("#outcomesNextButton", () => changeState("formatsState"));
   onClick("#formatsBackButton", () => changeState("outcomesState"));
@@ -31,7 +36,7 @@ function setupNavigation() {
     showReviewInformation();
     changeState("reviewState");
   });
-  onClick("#reviewBackButton", () => changeState("formatsState"));
+  onClick("#reviewBackButton", () => changeState("aimState"));
 }
 
 function setupSearch() {
@@ -43,7 +48,7 @@ function setupSearch() {
     console.warn("Outcome search input is not available.", error);
   }
 
-  for (const selector of ["#programmeDropdown", "#yearGroupDropdown", "#levelDropdown"]) {
+  for (const selector of ["#subjectDropdown", "#programmeDropdown", "#yearGroupDropdown", "#levelDropdown"]) {
     try {
       $w(selector).onChange(() => {
         selectedOutcomes.clear();
@@ -52,6 +57,11 @@ function setupSearch() {
     } catch (error) {
       // Optional filter control.
     }
+  }
+  try {
+    $w("#topicDropdown").onChange(() => loadOutcomes());
+  } catch (error) {
+    // Optional quick topic dropdown, configured in Wix Editor.
   }
 }
 
@@ -100,7 +110,7 @@ async function loadOutcomes(searchText = "") {
     const cleanSearch = String(searchText || "").trim();
     let query = wixData.query(OUTCOMES).eq("active", true);
 
-    const subject = "English";
+    const subject = safeValue("#subjectDropdown") || "English";
     query = query.eq("subject", subject);
 
     const programme = safeValue("#programmeDropdown");
@@ -125,10 +135,48 @@ async function loadOutcomes(searchText = "") {
 
     const result = await query.ascending("outcomeCode").limit(100).find();
     $w("#outcomeRepeater").data = result.items;
+    try {
+      const topics = [...new Set(result.items.map((item) => String(item.topic || item.strand || "").trim()).filter(Boolean))];
+      const dropdown = $w("#topicDropdown");
+      const current = dropdown.value;
+      dropdown.options = topics.map((value) => ({ label: value, value }));
+      if (topics.includes(current)) dropdown.value = current;
+    } catch (error) {
+      // The quick topic dropdown is optional until added in Wix Editor.
+    }
+    const topic = safeValue("#topicDropdown") || safeValue("#learningAimInput");
+    const terms = String(topic).toLowerCase().match(/[a-z]{4,}/g) || [];
+    suggestedOutcomes = result.items
+      .map((item) => ({ item, score: terms.filter((term) => `${item.officialOutcomeText || ""} ${item.strand || ""}`.toLowerCase().includes(term)).length }))
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(({ item }) => item);
+    setText("#suggestedOutcomesText", suggestedOutcomes.length
+      ? `Suggested outcomes: ${suggestedOutcomes.map((item) => item.outcomeCode || item.outcomeId).join(", ")}. Confirm on the draft.`
+      : "Outcomes will be matched from the official curriculum when you generate.");
   } catch (error) {
     console.error("Could not load curriculum outcomes.", error);
     $w("#outcomeRepeater").data = [];
     setStatus("Curriculum outcomes could not be loaded.");
+  }
+}
+
+async function loadSubjectChoices() {
+  try {
+    const subjects = new Set();
+    for (let page = 0; page < 5; page += 1) {
+      const result = await wixData.query(OUTCOMES).eq("active", true)
+        .skip(page * 100).limit(100).find();
+      result.items.forEach((item) => { if (item.subject) subjects.add(String(item.subject)); });
+      if (result.items.length < 100) break;
+    }
+    const dropdown = $w("#subjectDropdown");
+    const current = dropdown.value;
+    dropdown.options = [...subjects].sort().map((value) => ({ label: value, value }));
+    if (subjects.has(current)) dropdown.value = current;
+  } catch (error) {
+    // Existing English-only page remains usable without the optional dropdown.
   }
 }
 
@@ -186,6 +234,10 @@ async function generateGovernedPathway() {
       wixLocationFrontend.to("/plans-pricing");
       return;
     }
+    if (message.includes("ILEARN_OUTCOME_MATCH_REQUIRED")) {
+      changeState("outcomesState");
+      setStatus("Choose an official outcome for this topic, then continue to Generate.");
+    }
     button.label = "Try Again";
     setStatus(cleanError(message));
   } finally {
@@ -196,12 +248,12 @@ async function generateGovernedPathway() {
 function collectDetails() {
   const formats = getSelectedFormats();
   return {
-    subject: "English",
+    subject: safeValue("#subjectDropdown") || "English",
     programme: safeValue("#programmeDropdown"),
     yearGroup: safeValue("#yearGroupDropdown"),
     level: safeValue("#levelDropdown"),
-    topic: String(safeValue("#learningAimInput") || "").trim(),
-    learningAim: String(safeValue("#learningAimInput") || "").trim(),
+    topic: String(safeValue("#topicDropdown") || safeValue("#learningAimInput") || "").trim(),
+    learningAim: String(safeValue("#learningAimInput") || safeValue("#topicDropdown") || "").trim(),
     objectives: String(safeValue("#objectivesInput") || "").trim(),
     planningNotes: String(safeValue("#planningNotesInput") || "").trim(),
     udl: {
@@ -223,11 +275,7 @@ function collectDetails() {
 function validateDetails(details) {
   if (!details.programme) throw new Error("Please select a programme.");
   if (!details.yearGroup) throw new Error("Please select a year group.");
-  if (!details.level) throw new Error("Please select a level.");
   if (!details.learningAim) throw new Error("Please enter a learning aim.");
-  if (!details.objectives) throw new Error("Please enter learning objectives.");
-  if (!details.outcomes.length) throw new Error("Please select at least one curriculum outcome.");
-  if (!details.formats.length) throw new Error("Please select at least one learning format.");
 }
 
 function getSelectedFormats() {
@@ -260,11 +308,11 @@ function showReviewInformation() {
   setText("#reviewYearGroupText", safeValue("#yearGroupDropdown") || "Not selected");
   setText("#reviewLevelText", safeValue("#levelDropdown") || "Not selected");
   setText("#reviewAimText", safeValue("#learningAimInput") || "Not entered");
-  setText("#reviewObjectivesText", safeValue("#objectivesInput") || "Not entered");
+  setText("#reviewObjectivesText", safeValue("#objectivesInput") || "Suggested automatically from the learning aim");
   const outcomes = Array.from(selectedOutcomes.values()).map((item) => item.code);
-  setText("#reviewOutcomesText", outcomes.length ? outcomes.join(", ") : "No outcomes selected");
+  setText("#reviewOutcomesText", outcomes.length ? outcomes.join(", ") : "Matched from official outcomes; check in the draft");
   const formats = getSelectedFormats();
-  setText("#reviewFormatsText", formats.length ? formats.join(", ") : "No formats selected");
+  setText("#reviewFormatsText", formats.length ? formats.join(", ") : "Accessible formats selected automatically");
 }
 
 async function refreshAccessStatus() {
