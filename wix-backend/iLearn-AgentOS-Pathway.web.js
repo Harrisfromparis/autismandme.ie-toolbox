@@ -84,7 +84,11 @@ export const createGovernedPreLearningPathway = webMethod(
           description: outcome.officialOutcomeText,
           sourceUrl: outcome.officialSourceUrl
         })),
-        resources
+        resources,
+        examMaterials: resources.filter((resource) =>
+          ["ExamPaper", "MarkingScheme"].includes(resource.resourceType)
+        ),
+        textbooks: resources.filter((resource) => resource.resourceType === "DigitalTextbook")
       };
 
       const generation = await generatePathway(grounded);
@@ -482,6 +486,8 @@ async function retrieveApprovedResources(request, outcomes) {
       accessibilityFeatures: cleanText(resource.accessibilityFeatures, 600),
       licence: cleanText(resource.licence, 300),
       examRelevance: cleanText(resource.examRelevance, 500),
+      examYear: cleanText(resource.examYear, 4),
+      examLevel: cleanText(resource.examLevel, 80),
       matchStrength: resource._rank
     }));
 }
@@ -591,6 +597,9 @@ function pathwaySystemPrompt() {
     "Never invent curriculum codes, quotations, sources, URLs or facts.",
     "Create a coherent pre-learning journey, not a pile of links.",
     "Preserve the learning goal while offering low-pressure, neuroinclusive ways to engage and respond.",
+    "Treat teacher planning notes as context, not official curriculum. Offer equivalent UDL choices across engagement, representation and expression.",
+    "Use exam materials only as linked, approved practice resources. Never claim a particular question appears without seeing that question.",
+    "Use only approved textbook links and chapter references. Do not quote or reproduce textbook passages unless supplied with reuse rights.",
     "Return compact valid JSON only."
   ].join(" ");
 }
@@ -610,6 +619,12 @@ function buildPathwayPrompt(details) {
         `URL: ${r.sourceUrl}`
       ].join("\n")).join("\n\n")
     : "No approved external resource is mapped. Do not invent one.";
+  const examText = details.examMaterials.length
+    ? details.examMaterials.map((r) => `${r.resourceId}: ${r.title} (${r.examYear || "year unknown"}; ${r.examLevel || "level unknown"})`).join("\n")
+    : "No verified exam materials mapped to these outcomes.";
+  const textbookText = details.textbooks.length
+    ? details.textbooks.map((r) => `${r.resourceId}: ${r.title} — ${r.sourceUrl} (${r.licence || "rights not specified"})`).join("\n")
+    : "No verified digital textbook chapters mapped to these outcomes.";
 
   return `
 PROGRAMME: ${details.programme}
@@ -620,6 +635,8 @@ TOPIC: ${details.topic || "Not supplied"}
 LEARNING AIM: ${details.learningAim}
 OBJECTIVES: ${details.objectives}
 FORMATS: ${details.formats.length ? details.formats.join(", ") : "Standard text"}
+TEACHER PLANNING NOTES (teacher supplied; do not treat as official outcomes): ${details.planningNotes || "None"}
+UDL CHOICES: ${JSON.stringify(details.udl)}
 
 VALIDATED CURRICULUM OUTCOMES
 ${outcomesText}
@@ -627,7 +644,13 @@ ${outcomesText}
 APPROVED RESOURCES
 ${resourcesText}
 
-Return exactly one JSON object with title, learningAim, estimatedMinutes and 8 or fewer blocks. Each block must contain order, blockType, heading, content and resourceIds. Use resourceIds only from the supplied list. Include learning aim, prior knowledge, clear explanation, glossary, worked example, knowledge check, reflection and sources when useful. Keep learner-facing language clear and respectful.`;
+VERIFIED EXAM PRACTICE LINKS
+${examText}
+
+APPROVED DIGITAL TEXTBOOK CHAPTERS
+${textbookText}
+
+Return exactly one JSON object with title, learningAim, estimatedMinutes and 8 blocks. Each block must contain order, blockType, heading, content and resourceIds. Use resourceIds only from the supplied list. The eight blocks are learning aim, prior knowledge, clear explanation, glossary, worked example, knowledge check, reflection and sources. Include an optional exam practice link only if listed above and relevant. Offer equivalent UDL ways to access and show understanding without changing the learning aim. Keep learner-facing language clear and respectful.`;
 }
 
 function parseGeneratedPathway(text, details) {
@@ -692,8 +715,8 @@ function auditPathway(pathway, details) {
   const allowed = new Set(details.resources.map((r) => r.resourceId));
 
   if (!pathway?.title || !pathway?.learningAim) blockingIssues.push("Pathway header is incomplete.");
-  if (!Array.isArray(pathway?.blocks) || pathway.blocks.length < 3) {
-    blockingIssues.push("Pathway does not contain enough learning stages.");
+  if (!Array.isArray(pathway?.blocks) || pathway.blocks.length !== 8) {
+    blockingIssues.push("Pathway must contain the eight learning stages.");
   }
   if (pathway.learningAim !== details.learningAim) {
     blockingIssues.push("Generated pathway changed the teacher's learning aim.");
@@ -923,6 +946,13 @@ function prepareRequest(details = {}) {
     topic: cleanText(details.topic, 250),
     learningAim: cleanText(details.learningAim, 800),
     objectives: cleanText(details.objectives, 1400),
+    planningNotes: cleanText(details.planningNotes, 2400),
+    udl: {
+      representation: cleanChoices(details.udl?.representation),
+      expression: cleanChoices(details.udl?.expression),
+      engagement: cleanChoices(details.udl?.engagement),
+      reducedMotion: Boolean(details.udl?.reducedMotion)
+    },
     outcomes: Array.isArray(details.outcomes) ? details.outcomes.slice(0, MAX_OUTCOMES) : [],
     formats: Array.isArray(details.formats)
       ? details.formats.map((x) => cleanText(x, 100)).filter(Boolean).slice(0, 12)
@@ -932,6 +962,12 @@ function prepareRequest(details = {}) {
     interactiveOrImmersive: Boolean(details.interactiveOrImmersive),
     deviceBudget: cleanText(details.deviceBudget, 120)
   };
+}
+
+function cleanChoices(value) {
+  return Array.isArray(value)
+    ? value.map((choice) => cleanText(choice, 80)).filter(Boolean).slice(0, 5)
+    : [];
 }
 
 function validateRequest(request) {
@@ -1003,6 +1039,12 @@ function buildReliablePathway(details) {
   const sources = details.resources.length
     ? details.resources.map((r) => `${r.title}${r.sourceUrl ? ` — ${r.sourceUrl}` : ""}`).join("\n")
     : "No external resource was selected. Use the teacher's authorised curriculum materials.";
+  const udlAccess = details.udl.representation.length
+    ? details.udl.representation.join(", ")
+    : "text or a teacher-approved equivalent format";
+  const examPractice = details.examMaterials.length
+    ? `Optional exam practice: ${details.examMaterials.map((r) => `${r.title} (${r.examYear || "year unknown"})`).join("; ")}. Use only the linked original material; no exam question has been extracted or verified here.`
+    : "No verified exam paper or marking scheme was mapped to this lesson.";
 
   return {
     title: buildReliableTitle(details),
@@ -1010,11 +1052,11 @@ function buildReliablePathway(details) {
     estimatedMinutes: 15,
     blocks: [
       { order: 1, blockType: "learningAim", heading: "What you are learning", content: details.learningAim, resourceIds: [] },
-      { order: 2, blockType: "priorKnowledge", heading: "What you may already know", content: "What do you already know about this topic? You may answer with words, examples, a drawing or a short voice note.", resourceIds: [] },
-      { order: 3, blockType: "explain", heading: "Clear explanation", content: `${details.objectives}\n\nCurriculum focus:\n${outcomeSummary}`, resourceIds },
+      { order: 2, blockType: "priorKnowledge", heading: "What you may already know", content: "What do you already know about this topic? Choose a short written, spoken or visual response. You can begin independently.", resourceIds: [] },
+      { order: 3, blockType: "explain", heading: "Clear explanation", content: `${details.objectives}\n\nCurriculum focus:\n${outcomeSummary}\n\nTeacher planning context: ${details.planningNotes || "No extra notes supplied."}\n\nAccess choices: ${udlAccess}.`, resourceIds },
       { order: 4, blockType: "glossary", heading: "Important words", content: "Identify five important words from this lesson and explain each one in clear language.", resourceIds: [] },
       { order: 5, blockType: "example", heading: "Worked example", content: "Use one authorised class example. Identify a clear choice or feature, explain what it does, and connect it to the learning aim.", resourceIds },
-      { order: 6, blockType: "knowledgeCheck", heading: "Quick check", content: `1. What is the learning aim?\nAnswer: ${details.learningAim}\n\n2. Which curriculum outcomes are being practised?\nAnswer: ${outcomeCodes}\n\n3. What evidence will show your understanding?\nAnswer: A clear response supported by the authorised lesson material.`, resourceIds: [] },
+      { order: 6, blockType: "knowledgeCheck", heading: "Quick check", content: `1. What is the learning aim?\nAnswer: ${details.learningAim}\n\n2. Which curriculum outcomes are being practised?\nAnswer: ${outcomeCodes}\n\n3. What evidence will show your understanding?\nAnswer: A clear response supported by the authorised lesson material.\n\n${examPractice}`, resourceIds: details.examMaterials.map((r) => r.resourceId) },
       { order: 7, blockType: "reflection", heading: "Your question or opinion", content: "What is one question, idea or opinion you would like to bring to class?", resourceIds: [] },
       { order: 8, blockType: "sourceList", heading: "Sources", content: sources, resourceIds }
     ]
@@ -1177,6 +1219,8 @@ function publicResource(item) {
     accessibilityFeatures: item.accessibilityFeatures,
     licence: item.licence,
     examRelevance: item.examRelevance,
+    examYear: item.examYear,
+    examLevel: item.examLevel,
     matchStrength: item.matchStrength
   };
 }
