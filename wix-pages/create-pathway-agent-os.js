@@ -203,6 +203,13 @@ function collectDetails() {
     topic: String(safeValue("#learningAimInput") || "").trim(),
     learningAim: String(safeValue("#learningAimInput") || "").trim(),
     objectives: String(safeValue("#objectivesInput") || "").trim(),
+    planningNotes: String(safeValue("#planningNotesInput") || "").trim(),
+    udl: {
+      representation: formats.filter((format) => /text|audio|video|visual|vocabulary|example/i.test(format)),
+      expression: ["words", "voice", "visual response"],
+      engagement: ["choice of entry point", "low-pressure independent start"],
+      reducedMotion: false
+    },
     outcomes: Array.from(selectedOutcomes.values()).map((outcome) => ({
       outcomeId: outcome.outcomeId,
       code: outcome.code,
