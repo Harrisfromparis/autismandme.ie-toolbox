@@ -81,11 +81,14 @@ node scripts/build-ilearn-data.mjs \
   --outcomes official-outcomes.json \
   --planning planning-content.json \
   --resources approved-resources.json \
+  --textbooks digital-textbook-chapters.json \
   --exams SEC_exam_papers_and_marking_schemes_2010-2025.csv \
   --output ilearn-data-bundle.json
 ```
 
 The three JSON inputs must be arrays exported from the existing collections. Planning and resource records need explicit `outcomeIds` for joining. The script preserves official outcomes, attaches explicitly mapped planning and verified resources, and marks subject-level exam links as **unverified, unapproved, and unmapped candidates**. Review their level, language, PDF link, relevance and usage terms before adding individual exam links to `iLearnResources` and `iLearnOutcomeResourceMap`. Do not publish the generated bundle or the source PDFs to learners as a substitute for the approval workflow.
+
+The optional `--textbooks` file is a JSON array of chapter metadata: `resourceId`, `title`, `chapter`, `sourceUrl`, `publisher`, `licence`, `cycle`, `subject`, and explicit `outcomeIds`. The bundle marks these as review candidates. Link them only when access and reuse rights are clear. Approved textbook records can use resource type `DigitalTextbook` in `iLearnResources`; their chapter links then reach the generator through the existing verified outcome-resource mapping.
 
 The page code reads an optional `#planningNotesInput`. If that element is not present, generation still works. Add it in Wix Editor to let teachers supply planning notes. This GitHub repository is a deployment source; changing it does not by itself update the live Wix site until the site Git integration deploys the backend and page files.
 
