@@ -90,6 +90,25 @@ The three JSON inputs must be arrays exported from the existing collections. Pla
 
 The optional `--textbooks` file is a JSON array of chapter metadata: `resourceId`, `title`, `chapter`, `sourceUrl`, `publisher`, `licence`, `cycle`, `subject`, and explicit `outcomeIds`. The bundle marks these as review candidates. Link them only when access and reuse rights are clear. Approved textbook records can use resource type `DigitalTextbook` in `iLearnResources`; their chapter links then reach the generator through the existing verified outcome-resource mapping.
 
+### Public Irish ebook catalogue index
+
+```bash
+python3 scripts/scrape-irish-ebooks.py --output irish-ebook-candidates.csv
+```
+
+The indexer reads public sitemap/product metadata from Folens, Gill Education and Educate.ie, checks robots.txt, uses a delay, and stops a publisher on an access restriction. It does not sign in or fetch book chapters. Entries are **unverified and unapproved**. Subject/cycle labels inferred from a catalogue description need a teacher check. `--publisher 'Educate.ie'` and `--max-pages 10` allow a small trial; `--max-pages 0` checks all matching catalogue pages and can take hours. Edco is excluded because its catalogue returned an access restriction to this client. Convert reviewed rows to the `--textbooks` JSON shape above and explicitly map outcome IDs before use.
+
+### Export an original short ebook
+
+```bash
+python3 scripts/create-ilearn-ebook.py \
+  --pathway approved-pathway.json \
+  --resources verified-resources.json \
+  --output lesson.epub
+```
+
+The EPUB exporter requires an approved pathway with all eight learning stages. It packages the teacher-approved lesson text and links to approved resources. It does not package publisher ebook pages or exam PDFs. Export is a local follow-on step; the live Wix teacher UI does not yet call this script.
+
 The page code reads an optional `#planningNotesInput`. If that element is not present, generation still works. Add it in Wix Editor to let teachers supply planning notes. This GitHub repository is a deployment source; changing it does not by itself update the live Wix site until the site Git integration deploys the backend and page files.
 
 ### 2. Create Pathway page code
