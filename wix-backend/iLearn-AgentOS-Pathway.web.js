@@ -49,7 +49,7 @@ export const createGovernedPreLearningPathway = webMethod(
     const access = await getMemberAccess();
     enforceUsage(access);
 
-    const request = prepareRequest(rawDetails);
+    const request = await completeTeacherBrief(prepareRequest(rawDetails));
     validateRequest(request);
 
     const runId = createRunId();
@@ -425,6 +425,42 @@ async function loadAndValidateOutcomes(request) {
   return uniqueBy(found, (item) => item.outcomeId || item._id).slice(0, MAX_OUTCOMES);
 }
 
+async function completeTeacherBrief(request) {
+  if (!request.programme || !request.learningAim) return request;
+  if (!request.outcomes.length) {
+    let query = wixData.query(COLLECTIONS.outcomes)
+      .eq("active", true).eq("subject", request.subject);
+    const items = [];
+    for (let page = 0; page < 5; page += 1) {
+      const result = await query.skip(page * 100).limit(100)
+        .find({ suppressAuth: true, consistentRead: true });
+      items.push(...result.items);
+      if (result.items.length < 100) break;
+    }
+    const stopWords = new Set(["about", "their", "there", "which", "understand", "learning", "students", "learn", "lesson"]);
+    const keywords = [...new Set((String(request.topic || request.learningAim).toLowerCase().match(/[a-z]{4,}/g) || [])
+      .filter((term) => !stopWords.has(term)))];
+    const ranked = items.filter((item) => curriculumRecordMatches(item, request))
+      .map((item) => {
+        const text = `${item.officialOutcomeText || ""} ${item.strand || ""} ${item.outcomeCode || ""}`.toLowerCase();
+        return { item, score: keywords.reduce((sum, term) => sum + (text.includes(term) ? 1 : 0), 0) };
+      })
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score || String(a.item.outcomeCode || "").localeCompare(String(b.item.outcomeCode || "")));
+    if (!ranked.length) {
+      throw new Error("ILEARN_OUTCOME_MATCH_REQUIRED: No official outcome matched this topic. Try a more specific topic or select an outcome in the full planner.");
+    }
+    request.outcomes = ranked.slice(0, 3).map(({ item }) => ({ outcomeId: item._id, code: item.outcomeCode || item.outcomeId }));
+    request.automaticOutcomeSelection = true;
+  }
+  if (!request.objectives) request.objectives = `Explain ${request.learningAim}. Show understanding with a short example or response.`;
+  if (!request.formats.length) request.formats = ["Audio", "Video", "Cartoon", "Music", "Interactive", "Immersive 3D", "Visual supports", "Standard text", "Worked example", "Knowledge check"];
+  if (!request.udl.representation.length) request.udl.representation = ["audio", "audiovisual", "cartoon", "music", "visual"];
+  if (!request.udl.expression.length) request.udl.expression = ["voice", "drawing", "performance", "words"];
+  if (!request.udl.engagement.length) request.udl.engagement = ["choice of entry point", "independent start"];
+  return request;
+}
+
 async function retrieveApprovedResources(request, outcomes) {
   const scores = new Map();
 
@@ -598,6 +634,8 @@ function pathwaySystemPrompt() {
     "Create a coherent pre-learning journey, not a pile of links.",
     "Preserve the learning goal while offering low-pressure, neuroinclusive ways to engage and respond.",
     "Treat teacher planning notes as context, not official curriculum. Offer equivalent UDL choices across engagement, representation and expression.",
+    "Offer audio, audiovisual, illustrated/cartoon, music or rhythm, and optional interactive/VR learning routes when they serve the aim. Let learners answer by speaking, drawing, demonstrating or writing. Never require a headset or a written response as the only path.",
+    "Do not pretend media files or VR scenes exist. Link a route only when an approved mapped resource supports it; otherwise describe a teacher-led or offline equivalent as an option.",
     "Use exam materials only as linked, approved practice resources. Never claim a particular question appears without seeing that question.",
     "Use only approved textbook links and chapter references. Do not quote or reproduce textbook passages unless supplied with reuse rights.",
     "Return compact valid JSON only."
@@ -728,6 +766,7 @@ function auditPathway(pathway, details) {
     }
   }
   if (!details.resources.length) warnings.push("No verified mapped external resources were available; the draft relies on curriculum context and teacher materials.");
+  if (details.automaticOutcomeSelection) warnings.push("The system matched these official outcomes by topic. Check their relevance before approval.");
 
   return {
     passed: blockingIssues.length === 0,
@@ -1052,12 +1091,12 @@ function buildReliablePathway(details) {
     estimatedMinutes: 15,
     blocks: [
       { order: 1, blockType: "learningAim", heading: "What you are learning", content: details.learningAim, resourceIds: [] },
-      { order: 2, blockType: "priorKnowledge", heading: "What you may already know", content: "What do you already know about this topic? Choose a short written, spoken or visual response. You can begin independently.", resourceIds: [] },
-      { order: 3, blockType: "explain", heading: "Clear explanation", content: `${details.objectives}\n\nCurriculum focus:\n${outcomeSummary}\n\nTeacher planning context: ${details.planningNotes || "No extra notes supplied."}\n\nAccess choices: ${udlAccess}.`, resourceIds },
+      { order: 2, blockType: "priorKnowledge", heading: "What you may already know", content: "What do you already know about this topic? Say it, draw it, act it out or write it. You can begin independently.", resourceIds: [] },
+      { order: 3, blockType: "explain", heading: "Choose how to explore", content: `${details.objectives}\n\nCurriculum focus:\n${outcomeSummary}\n\nTeacher planning context: ${details.planningNotes || "No extra notes supplied."}\n\nAccess choices: ${udlAccess}. Listen to a short teacher explanation, watch or sketch a visual sequence, or use a teacher-made cartoon or rhythm cue. An interactive or VR route is optional when an approved linked resource exists. Offer an equivalent still image or spoken route. These are activity choices, not claims that media files exist.`, resourceIds },
       { order: 4, blockType: "glossary", heading: "Important words", content: "Identify five important words from this lesson and explain each one in clear language.", resourceIds: [] },
-      { order: 5, blockType: "example", heading: "Worked example", content: "Use one authorised class example. Identify a clear choice or feature, explain what it does, and connect it to the learning aim.", resourceIds },
+      { order: 5, blockType: "example", heading: "Worked example", content: "Use one authorised class example. Show a feature by voice, drawing, movement, comic strip or writing. Explain how it links to the learning aim.", resourceIds },
       { order: 6, blockType: "knowledgeCheck", heading: "Quick check", content: `1. What is the learning aim?\nAnswer: ${details.learningAim}\n\n2. Which curriculum outcomes are being practised?\nAnswer: ${outcomeCodes}\n\n3. What evidence will show your understanding?\nAnswer: A clear response supported by the authorised lesson material.\n\n${examPractice}`, resourceIds: details.examMaterials.map((r) => r.resourceId) },
-      { order: 7, blockType: "reflection", heading: "Your question or opinion", content: "What is one question, idea or opinion you would like to bring to class?", resourceIds: [] },
+      { order: 7, blockType: "reflection", heading: "Your question or opinion", content: "Bring one question or idea to class. Record a voice note, sketch a frame, make a short rhythm, demonstrate it or write it.", resourceIds: [] },
       { order: 8, blockType: "sourceList", heading: "Sources", content: sources, resourceIds }
     ]
   };
