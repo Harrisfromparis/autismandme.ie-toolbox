@@ -87,7 +87,8 @@ export const createGovernedPreLearningPathway = webMethod(
         resources,
         examMaterials: resources.filter((resource) =>
           ["ExamPaper", "MarkingScheme"].includes(resource.resourceType)
-        )
+        ),
+        textbooks: resources.filter((resource) => resource.resourceType === "DigitalTextbook")
       };
 
       const generation = await generatePathway(grounded);
@@ -598,6 +599,7 @@ function pathwaySystemPrompt() {
     "Preserve the learning goal while offering low-pressure, neuroinclusive ways to engage and respond.",
     "Treat teacher planning notes as context, not official curriculum. Offer equivalent UDL choices across engagement, representation and expression.",
     "Use exam materials only as linked, approved practice resources. Never claim a particular question appears without seeing that question.",
+    "Use only approved textbook links and chapter references. Do not quote or reproduce textbook passages unless supplied with reuse rights.",
     "Return compact valid JSON only."
   ].join(" ");
 }
@@ -620,6 +622,9 @@ function buildPathwayPrompt(details) {
   const examText = details.examMaterials.length
     ? details.examMaterials.map((r) => `${r.resourceId}: ${r.title} (${r.examYear || "year unknown"}; ${r.examLevel || "level unknown"})`).join("\n")
     : "No verified exam materials mapped to these outcomes.";
+  const textbookText = details.textbooks.length
+    ? details.textbooks.map((r) => `${r.resourceId}: ${r.title} — ${r.sourceUrl} (${r.licence || "rights not specified"})`).join("\n")
+    : "No verified digital textbook chapters mapped to these outcomes.";
 
   return `
 PROGRAMME: ${details.programme}
@@ -641,6 +646,9 @@ ${resourcesText}
 
 VERIFIED EXAM PRACTICE LINKS
 ${examText}
+
+APPROVED DIGITAL TEXTBOOK CHAPTERS
+${textbookText}
 
 Return exactly one JSON object with title, learningAim, estimatedMinutes and 8 blocks. Each block must contain order, blockType, heading, content and resourceIds. Use resourceIds only from the supplied list. The eight blocks are learning aim, prior knowledge, clear explanation, glossary, worked example, knowledge check, reflection and sources. Include an optional exam practice link only if listed above and relevant. Offer equivalent UDL ways to access and show understanding without changing the learning aim. Keep learner-facing language clear and respectful.`;
 }
