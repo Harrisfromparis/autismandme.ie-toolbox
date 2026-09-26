@@ -149,6 +149,16 @@ The signed-in preview page code consumes that decision and calls the secure back
 
 ## One-time Wix Git Integration requirement
 
+### Fast teacher flow (pending deployment)
+
+The create page now takes programme, year and a learning aim/topic as the essential teacher choices. Level, objectives, planning notes, outcome checkboxes and formats are optional. The aim step goes straight to a short review and Generate. The backend matches active official outcomes for the subject/cycle/year from topic words, suggests objectives, chooses UDL routes, retrieves only approved mapped resources, and produces an eight-stage draft. If no official outcome matches, it stops and asks for a more specific topic or manual outcome selection; it never substitutes an invented code. Topic matches are flagged for teacher review before approval. Teachers still review sources and approve publication.
+
+The default draft offers listening, watching, cartoon/storyboard, music/rhythm, interactive/VR, visual and short text routes, plus speaking, drawing, demonstrating and writing responses. VR and media are optional. A source link is shown only when it is verified and mapped; the fallback describes teacher-led activities rather than pretending generated media assets exist.
+
+The current Wix page still has wizard panels and element labels configured in the Wix Editor. After Git integration, simplify that layout to one compact panel with programme, year, topic, an optional advanced section and a single Generate button. Keep the preview's outcome/source/QA/teacher approval decision visible. The separate Education Hub landing page and `/teacher-dashboard` are not stored in this repository and require an authenticated Wix Editor session to change.
+
+Recommended teacher dashboard layout: a compact **Create a lesson** card with `#subjectDropdown`, `#programmeDropdown`, `#yearGroupDropdown`, `#topicDropdown` (or free-text `#learningAimInput`), and Generate. Use Junior Cycle, Leaving Certificate, Leaving Certificate Applied and Transition Year as programme choices only where matching official outcomes exist in the CMS. Show `#suggestedOutcomesText` as a provisional hint; the server validates actual outcomes. Place optional level, objectives, format and planning controls behind **More choices**. Below the main action, show recent drafts, pending approvals and a clear email-to-class draft action after approval. Email delivery needs a known learner route and recipient selection; the current code does not send messages. Exam questions require a verified question index or inspected paper content. Current verified SEC paper and marking-scheme records can be offered as links, never as invented question text.
+
 Wix does not expose a REST API for writing site Velo source files. The supported path is Wix Git Integration / Wix CLI.
 
 For this site, the one-time GitHub authorization has not yet been completed, because no Wix-generated site repository exists in the connected GitHub account.
