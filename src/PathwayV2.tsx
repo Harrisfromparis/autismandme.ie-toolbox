@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import './ilearn-v2.css'
+import GuidedLearningWorld from './components/GuidedLearningWorld'
 import {
   AgentKernel,
   DEFAULT_AGENT_POLICIES,
@@ -113,6 +114,8 @@ export default function PathwayV2() {
             Prepare governed workflow
           </button>
         </section>
+
+        {immersive && <GuidedLearningWorld />}
 
         <section style={{ marginTop: 28 }} aria-label="Agent pipeline">
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'end', marginBottom: 12 }}>
