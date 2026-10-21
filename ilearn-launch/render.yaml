@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ilearn-adaptive-evidence
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ILEARN_SERVICE_API_KEY
+        sync: false
+      - key: ILEARN_MODE
+        value: production
+    disk:
+      name: ilearn-sag-data
+      mountPath: /data
+      sizeGB: 1
