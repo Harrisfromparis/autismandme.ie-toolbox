@@ -4,6 +4,9 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
+        "director": "node apps/director-studio/server.mjs",
+        "director:setup": "node apps/director-studio/setup.mjs",
+        "test:director": "node --test apps/director-studio/tests/*.test.mjs",
         "dev": "vite",
         "kill": "fuser -k 5000/tcp",
         "build": "tsc -b --noCheck && vite build",
