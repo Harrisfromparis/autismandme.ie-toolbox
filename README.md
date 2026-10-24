@@ -1,3 +1,13 @@
+# Autism & Me — Director Studio
+
+The local animation studio is in [`apps/director-studio`](apps/director-studio/README.md).
+It turns uploaded character artwork, a script and an editable storyboard into a voiced cutout-animation MP4 with captions.
+
+On Windows, run `npm run director:setup` once, then `npm run director` and open `http://127.0.0.1:4317`.
+The existing iLEARN app still uses the usual `npm run dev` / `npm run build` commands.
+
+---
+
 # ✨ Welcome to Your Spark Template!
 You've just launched your brand-new Spark Template Codespace — everything’s fired up and ready for you to explore, build, and create with Spark!
 

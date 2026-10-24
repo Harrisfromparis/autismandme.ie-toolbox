@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#171724" />
+    <title>Director Studio · Autism & Me</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/" aria-label="Director Studio home"
+          ><span class="brand-icon">d<span>✦</span></span
+          ><span
+            >director<span class="brand-sub">AUTISM & ME STUDIO</span></span
+          ></a
+        >
+        <div class="side-label">YOUR WORKSPACE</div>
+        <nav aria-label="Studio navigation">
+          <button class="nav-item active" data-tab="create">
+            <span>▧</span> Create an episode
+          </button>
+          <button class="nav-item" data-tab="storyboard">
+            <span>▤</span> Storyboard <small id="shotCount">0</small>
+          </button>
+          <button class="nav-item" data-tab="director">
+            <span>✦</span> Director mode
+          </button>
+          <button class="nav-item" data-tab="export">
+            <span>↗</span> Finished episode
+          </button>
+        </nav>
+        <div class="side-label projects-label">
+          SAVED EPISODES
+          <button id="newProject" title="New episode" aria-label="New episode">
+            +
+          </button>
+        </div>
+        <div id="projectList" class="project-list"></div>
+        <div class="sidebar-bottom">
+          <span class="online-dot"></span>
+          <div>
+            Local production studio<small
+              >Your artwork stays on this computer</small
+            >
+          </div>
+        </div>
+      </aside>
+      <main>
+        <header class="topbar">
+          <div class="breadcrumb">
+            Your studio <span>/</span>
+            <strong id="headerTitle">Untitled episode</strong>
+          </div>
+          <div class="header-actions">
+            <select id="openProject" aria-label="Open saved episode">
+              <option value="">Open episode…</option></select
+            ><span id="saveState" role="status">Ready</span
+            ><button id="saveProject" class="button small">Save project</button
+            ><button
+              id="downloadProject"
+              class="icon-button"
+              title="Download project backup"
+              aria-label="Download project backup"
+            >
+              ↓</button
+            ><label class="icon-button" title="Open project backup"
+              >↥<input type="file" id="importProject" accept=".json" hidden
+            /></label>
+          </div>
+        </header>
+        <div class="content">
+          <section id="view-create" class="view">
+            <div class="page-heading">
+              <div>
+                <div class="eyebrow">FROM YOUR IMAGINATION TO THE SCREEN</div>
+                <h1>Your characters.<br />Your story. <em>Your show.</em></h1>
+                <p>Bring your artwork and script. Let’s make an episode.</p>
+              </div>
+              <span class="version-pill">WORKING STUDIO · V0.1</span>
+            </div>
+            <div class="create-layout">
+              <div class="form-stack">
+                <section class="panel">
+                  <div class="section-heading">
+                    <span class="step-number">01</span>
+                    <div>
+                      <h2>Set the scene</h2>
+                      <p>A home for your next story.</p>
+                    </div>
+                  </div>
+                  <div class="two-fields">
+                    <label
+                      >Episode title<input
+                        id="title"
+                        maxlength="120"
+                        placeholder="A very unexpected Tuesday" /></label
+                    ><label
+                      >Series name<input
+                        id="series"
+                        maxlength="120"
+                        placeholder="The Laminator"
+                    /></label>
+                  </div>
+                </section>
+                <section class="panel">
+                  <div class="section-heading">
+                    <span class="step-number">02</span>
+                    <div>
+                      <h2>Meet your cast</h2>
+                      <p>
+                        Upload character artwork. Transparent PNGs work best.
+                      </p>
+                    </div>
+                    <label class="text-button"
+                      >+ Add character<input
+                        id="charactersUpload"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        multiple
+                        hidden
+                    /></label>
+                  </div>
+                  <div id="characterList" class="character-list"></div>
+                  <label id="uploadZone" class="upload-zone"
+                    ><span class="upload-symbol">↥</span
+                    ><strong>Drop your characters here</strong
+                    ><span
+                      >or choose artwork · PNG, JPG, WebP · up to 15 MB
+                      each</span
+                    ><input
+                      id="dropUpload"
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      multiple
+                      hidden
+                  /></label>
+                </section>
+                <section class="panel">
+                  <div class="section-heading">
+                    <span class="step-number">03</span>
+                    <div>
+                      <h2>Tell your story</h2>
+                      <p>Dialogue stays exactly as you write it.</p>
+                    </div>
+                    <button id="sampleScript" class="text-button">
+                      Try a sample
+                    </button>
+                  </div>
+                  <label
+                    >Script<textarea
+                      id="script"
+                      rows="9"
+                      placeholder="INT. THE NEWSROOM — MORNING&#10;&#10;[The characters look at a mysterious envelope.]&#10;Alex: I think this one is for you.&#10;Sam: That is what you said about the last one."
+                    ></textarea>
+                  </label>
+                  <div class="field-note">
+                    Use Character: dialogue. Put scene headings on their own
+                    line and action notes in [brackets].
+                  </div>
+                  <label class="story-label"
+                    >Storyboard & scene direction<textarea
+                      id="storyboard"
+                      rows="5"
+                      placeholder="Panel 1: Wide shot of the newsroom.&#10;Panel 2: Close-up on Sam.&#10;Panel 3: Hold on Alex’s reaction."
+                    ></textarea>
+                  </label>
+                  <div class="field-note">
+                    One panel per line, matched to dialogue shots in order. You
+                    can edit the shot plan next.
+                  </div>
+                </section>
+                <button id="makeStoryboard" class="button primary full">
+                  Create my storyboard <span>→</span>
+                </button>
+              </div>
+              <div class="right-stack">
+                <div class="preview-card">
+                  <div class="preview-label">
+                    <span class="online-dot"></span> YOUR PRODUCTION
+                  </div>
+                  <div class="poster">
+                    <div class="poster-orbit"></div>
+                    <div class="poster-art">
+                      <span>✦</span
+                      ><strong
+                        >Every great series<br />starts with a story.</strong
+                      ><small>Your cast will appear here</small>
+                    </div>
+                    <div id="posterCast"></div>
+                  </div>
+                  <div class="preview-caption">
+                    <strong>A whole episode. Made yours.</strong>
+                    <p>
+                      Characters, dialogue, camera cuts and a finished video in
+                      one place.
+                    </p>
+                  </div>
+                </div>
+                <section class="panel compact">
+                  <h3>Choose a directing style</h3>
+                  <div class="style-options">
+                    <button data-style="comedy" class="style-choice selected">
+                      <span>☀</span><strong>Playful comedy</strong
+                      ><small>Warm colour · lively pacing</small></button
+                    ><button data-style="cinematic" class="style-choice">
+                      <span>◐</span><strong>Cinematic story</strong
+                      ><small>Moody colour · closer shots</small></button
+                    ><button data-style="gentle" class="style-choice">
+                      <span>≈</span><strong>Gentle storytelling</strong
+                      ><small>Calm colour · wider framing</small>
+                    </button>
+                  </div>
+                </section>
+                <div class="honesty-note">
+                  <span>✧</span>
+                  <p>
+                    <strong>Built-in cutout animation</strong>Moves your
+                    existing artwork with camera cuts, voice and optional
+                    authored mouth shapes. Full AI-generated body movement needs
+                    a connected video model.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="view-storyboard" class="view hidden">
+            <div class="page-heading slim">
+              <div>
+                <div class="eyebrow">THE PLAN BEFORE THE PICTURE</div>
+                <h1>Your storyboard</h1>
+                <p>
+                  Check the dialogue, choose the framing, make every shot yours.
+                </p>
+              </div>
+              <button id="goDirector" class="button primary">
+                Open Director Mode →
+              </button>
+            </div>
+            <div id="planSummary" class="summary-bar"></div>
+            <div id="shotList" class="shot-list"></div>
+            <div id="emptyStoryboard" class="empty-state">
+              <span>▤</span>
+              <h2>Your story starts here</h2>
+              <p>Add your characters and script to create a shot plan.</p>
+              <button class="button" data-tab="create">
+                Create an episode
+              </button>
+            </div>
+          </section>
+          <section id="view-director" class="view hidden">
+            <div class="page-heading slim">
+              <div>
+                <div class="eyebrow">YOU’RE IN THE DIRECTOR’S CHAIR</div>
+                <h1>Make it feel right.</h1>
+                <p>
+                  Preview your shots. Shape the delivery. Then make the episode.
+                </p>
+              </div>
+              <span class="version-pill">✦ DIRECTOR MODE</span>
+            </div>
+            <div class="director-layout">
+              <div class="director-main">
+                <div class="screen-wrapper">
+                  <canvas
+                    id="stage"
+                    width="1280"
+                    height="720"
+                    aria-label="Selected shot preview"
+                  ></canvas>
+                  <div class="screen-badge">CUTOUT PREVIEW</div>
+                </div>
+                <div class="transport">
+                  <button id="previewShot" class="button small">
+                    ▶ Preview with voice</button
+                  ><span id="currentShotLabel">No shot selected</span
+                  ><button
+                    id="previousShot"
+                    class="icon-button"
+                    aria-label="Previous shot"
+                  >
+                    ←</button
+                  ><button
+                    id="nextShot"
+                    class="icon-button"
+                    aria-label="Next shot"
+                  >
+                    →
+                  </button>
+                </div>
+                <div id="filmstrip" class="filmstrip"></div>
+                <section class="panel direction-controls">
+                  <h3>Shot direction</h3>
+                  <div class="two-fields">
+                    <label
+                      >Camera<select id="directorCamera">
+                        <option value="wide">Wide shot</option>
+                        <option value="medium">Medium shot</option>
+                        <option value="close">Close-up</option>
+                      </select></label
+                    ><label
+                      >Minimum duration (seconds)<input
+                        id="directorDuration"
+                        type="number"
+                        min="1"
+                        max="120"
+                        value="4"
+                    /></label>
+                  </div>
+                  <label
+                    >Storyboard direction<textarea
+                      id="directorAction"
+                      rows="2"
+                    ></textarea>
+                  </label>
+                  <p class="field-note">
+                    Camera framing and timing are rendered. Freeform action is a
+                    production note; it does not invent new poses.
+                  </p>
+                  <div class="two-fields">
+                    <label class="button file-button"
+                      >↥ Shot background<input
+                        id="shotBackground"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        hidden /></label
+                    ><button id="clearShotBackground" class="button">
+                      Use episode background
+                    </button>
+                  </div>
+                </section>
+              </div>
+              <aside class="director-aside">
+                <section class="panel">
+                  <h3>Production settings</h3>
+                  <label
+                    >Renderer<select id="engine">
+                      <option value="cutout">
+                        Built-in cutout · no credits needed
+                      </option>
+                    </select></label
+                  ><label
+                    >Export quality<select id="resolution">
+                      <option value="720">HD · 1280 × 720</option>
+                      <option value="1080">Full HD · 1920 × 1080</option>
+                    </select></label
+                  ><label class="check"
+                    ><input id="speech" type="checkbox" checked /> Generate
+                    spoken dialogue</label
+                  ><label class="check"
+                    ><input id="captions" type="checkbox" checked /> Show
+                    dialogue captions</label
+                  ><label class="check"
+                    ><input id="reducedMotion" type="checkbox" /> Calm
+                    movement</label
+                  ><label
+                    >Narrator voice<select id="narratorVoice"></select></label
+                  ><label
+                    >Speaking pace<select id="voiceRate">
+                      <option value="-2">Slower</option>
+                      <option value="0" selected>Natural</option>
+                      <option value="2">Faster</option>
+                    </select></label
+                  >
+                  <div class="asset-setting">
+                    <label class="text-button"
+                      >↥ Episode background<input
+                        id="backgroundUpload"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        hidden /></label
+                    ><button id="clearBackground" class="text-button subtle">
+                      Remove</button
+                    ><small id="backgroundStatus">Studio backdrop</small>
+                  </div>
+                  <div class="asset-setting">
+                    <label class="text-button"
+                      >♫ Add music<input
+                        id="musicUpload"
+                        type="file"
+                        accept="audio/mpeg,audio/wav"
+                        hidden /></label
+                    ><button id="clearMusic" class="text-button subtle">
+                      Remove</button
+                    ><small id="musicStatus">No music selected</small>
+                  </div>
+                  <button id="renderEpisode" class="button primary full">
+                    ✦ Create finished episode
+                  </button>
+                  <p class="field-note">
+                    Dialogue sets the minimum shot length. Longer speech extends
+                    the shot automatically.
+                  </p>
+                </section>
+                <section class="panel">
+                  <h3>Quick directions</h3>
+                  <p class="field-note">
+                    Applies to the selected shot. These are precise studio
+                    controls.
+                  </p>
+                  <div class="direction-chips">
+                    <button data-direction="close">Make it a close-up</button
+                    ><button data-direction="wide">Show the whole scene</button
+                    ><button data-direction="slower">Give it more time</button
+                    ><button data-direction="faster">Tighten the pacing</button>
+                  </div>
+                  <div
+                    id="directionFeedback"
+                    role="status"
+                    class="director-feedback"
+                  >
+                    Choose a shot to direct.
+                  </div>
+                </section>
+              </aside>
+            </div>
+          </section>
+          <section id="view-export" class="view hidden">
+            <div class="page-heading slim">
+              <div>
+                <div class="eyebrow">READY FOR ITS FIRST AUDIENCE</div>
+                <h1>Your finished episode.</h1>
+                <p>One film. Your characters. Your story.</p>
+              </div>
+            </div>
+            <div id="renderProgress" class="render-progress hidden">
+              <div class="render-icon">✦</div>
+              <h2 id="progressTitle">Making your episode</h2>
+              <p id="progressMessage" role="status"></p>
+              <progress id="progressBar" max="100" value="0"></progress>
+              <p class="field-note">
+                You can leave this page open while the studio works. Keep the
+                local server running.
+              </p>
+            </div>
+            <div id="resultPanel" class="hidden">
+              <video id="finishedVideo" controls playsinline></video>
+              <div class="result-meta">
+                <div>
+                  <h2 id="resultTitle"></h2>
+                  <p>H.264 MP4 · 24 fps · AAC audio</p>
+                </div>
+                <div class="result-actions">
+                  <a
+                    id="downloadVideo"
+                    class="button primary"
+                    download="episode.mp4"
+                    >↓ Download episode</a
+                  ><a id="downloadSrt" class="button" download="captions.srt"
+                    >Captions</a
+                  ><button id="backupResult" class="button">
+                    Project backup
+                  </button>
+                </div>
+              </div>
+              <p id="resultStale" class="field-note"></p>
+            </div>
+            <div id="emptyExport" class="empty-state">
+              <span>▷</span>
+              <h2>The screen is waiting.</h2>
+              <p>
+                Review your storyboard, then create your episode in Director
+                Mode.
+              </p>
+              <button data-tab="director" class="button primary">
+                Go to Director Mode →
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <div id="toast" class="toast hidden" role="status"></div>
+    <script type="module" src="/app.mjs"></script>
+  </body>
+</html>

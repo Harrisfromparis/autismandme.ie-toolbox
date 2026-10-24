@@ -1,0 +1,6 @@
+data/
+runtime.json
+.runtime/
+__pycache__/
+*.log
+node_modules/
